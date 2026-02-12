@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Hospital Management</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/admin-style.css">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-gradient-primary sticky-top">
+        <div class="container-fluid">
+            <a class="navbar-brand fw-bold" href="/admin">
+                <i class="fas fa-hospital"></i> Hospital Admin Panel
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/admin">
+                            <i class="fas fa-home"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin/patients">
+                            <i class="fas fa-users"></i> Patients
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin/doctors">
+                            <i class="fas fa-stethoscope"></i> Doctors
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin/clinics">
+                            <i class="fas fa-building"></i> Clinics
+                        </a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user-circle"></i> Admin
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="/admin/profile">Profile</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/">Logout</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <nav class="col-md-2 d-md-block bg-light sidebar">
+                <div class="position-sticky pt-3">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="/admin">
+                                <i class="fas fa-chart-line"></i> Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/admin/patients">
+                                <i class="fas fa-users"></i> Patients
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/admin/doctors">
+                                <i class="fas fa-stethoscope"></i> Doctors
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/admin/clinics">
+                                <i class="fas fa-building"></i> Clinics
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/admin/medicines">
+                                <i class="fas fa-pills"></i> Medicines
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/admin/tests">
+                                <i class="fas fa-flask"></i> Tests
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- Main Content -->
+            <main class="col-md-10 ms-sm-auto px-md-4 py-4">
+                <!-- Page Title -->
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h1 class="h2 fw-bold text-primary">Dashboard</h1>
+                    <span class="text-muted" th:text="${#dates.format(#dates.createNow(), 'MMMM dd, yyyy')}"></span>
+                </div>
+
+                <!-- Stats Cards -->
+                <div class="row mb-4">
+                    <!-- Total Patients -->
+                    <div class="col-md-3 mb-3">
+                        <div class="card stat-card border-0 shadow-sm">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="text-muted mb-1">Total Patients</h6>
+                                        <h2 class="text-primary fw-bold" id="totalPatients">0</h2>
+                                    </div>
+                                    <div class="stat-icon bg-primary-light">
+                                        <i class="fas fa-users text-primary fa-2x"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Total Doctors -->
+                    <div class="col-md-3 mb-3">
+                        <div class="card stat-card border-0 shadow-sm">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="text-muted mb-1">Total Doctors</h6>
+                                        <h2 class="text-success fw-bold" id="totalDoctors">0</h2>
+                                    </div>
+                                    <div class="stat-icon bg-success-light">
+                                        <i class="fas fa-stethoscope text-success fa-2x"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Total Clinics -->
+                    <div class="col-md-3 mb-3">
+                        <div class="card stat-card border-0 shadow-sm">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="text-muted mb-1">Total Clinics</h6>
+                                        <h2 class="text-info fw-bold" id="totalClinics">0</h2>
+                                    </div>
+                                    <div class="stat-icon bg-info-light">
+                                        <i class="fas fa-building text-info fa-2x"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Active Records -->
+                    <div class="col-md-3 mb-3">
+                        <div class="card stat-card border-0 shadow-sm">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="text-muted mb-1">Active Records</h6>
+                                        <h2 class="text-warning fw-bold" id="activeRecords">0</h2>
+                                    </div>
+                                    <div class="stat-icon bg-warning-light">
+                                        <i class="fas fa-chart-pie text-warning fa-2x"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-header bg-light border-bottom">
+                                <h5 class="mb-0"><i class="fas fa-bolt"></i> Quick Actions</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-3 mb-2">
+                                        <a href="/admin/patients?action=add" class="btn btn-primary w-100">
+                                            <i class="fas fa-user-plus"></i> Add Patient
+                                        </a>
+                                    </div>
+                                    <div class="col-md-3 mb-2">
+                                        <a href="/admin/doctors?action=add" class="btn btn-success w-100">
+                                            <i class="fas fa-user-md"></i> Add Doctor
+                                        </a>
+                                    </div>
+                                    <div class="col-md-3 mb-2">
+                                        <a href="/admin/clinics?action=add" class="btn btn-info w-100">
+                                            <i class="fas fa-hospital"></i> Add Clinic
+                                        </a>
+                                    </div>
+                                    <div class="col-md-3 mb-2">
+                                        <a href="/admin/doctors" class="btn btn-secondary w-100">
+                                            <i class="fas fa-calendar"></i> View Schedule
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activities -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-header bg-light border-bottom">
+                                <h5 class="mb-0"><i class="fas fa-history"></i> System Information</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <p><strong>API Base URL:</strong> <code>http://localhost:8080</code></p>
+                                        <p><strong>Database:</strong> MongoDB</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <p><strong>Last Updated:</strong> <span th:text="${#dates.format(#dates.createNow(), 'MMM dd, yyyy HH:mm')}"></span></p>
+                                        <p><strong>Version:</strong> 1.0.0</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Axios -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+    <script>
+        // Load dashboard statistics
+        async function loadDashboardStats() {
+            try {
+                const [patientsRes, doctorsRes, clinicsRes] = await Promise.all([
+                    axios.get('/api/patients'),
+                    axios.get('/api/doctors'),
+                    axios.get('/api/clinics')
+                ]);
+
+                document.getElementById('totalPatients').textContent = patientsRes.data.length;
+                document.getElementById('totalDoctors').textContent = doctorsRes.data.length;
+                document.getElementById('totalClinics').textContent = clinicsRes.data.length;
+                document.getElementById('activeRecords').textContent = 
+                    patientsRes.data.length + doctorsRes.data.length + clinicsRes.data.length;
+            } catch (error) {
+                console.error('Error loading dashboard stats:', error);
+            }
+        }
+
+        // Load stats when page loads
+        document.addEventListener('DOMContentLoaded', loadDashboardStats);
+    </script>
+</body>
+</html>

@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Profile - Hospital Admin</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/admin-style.css">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-gradient-primary sticky-top">
+        <div class="container-fluid">
+            <a class="navbar-brand fw-bold" href="/admin">
+                <i class="fas fa-hospital"></i> Hospital Admin Panel
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin">
+                            <i class="fas fa-home"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin/patients">
+                            <i class="fas fa-users"></i> Patients
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin/doctors">
+                            <i class="fas fa-stethoscope"></i> Doctors
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin/clinics">
+                            <i class="fas fa-building"></i> Clinics
+                        </a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user-circle"></i> Admin
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item active" href="/admin/profile">Profile</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/">Logout</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <nav class="col-md-2 d-md-block bg-light sidebar">
+                <div class="position-sticky pt-3">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/admin">
+                                <i class="fas fa-chart-line"></i> Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/admin/patients">
+                                <i class="fas fa-users"></i> Patients
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/admin/doctors">
+                                <i class="fas fa-stethoscope"></i> Doctors
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/admin/clinics">
+                                <i class="fas fa-building"></i> Clinics
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/admin/medicines">
+                                <i class="fas fa-pills"></i> Medicines
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/admin/tests">
+                                <i class="fas fa-flask"></i> Tests
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- Main Content -->
+            <main class="col-md-10 ms-sm-auto px-md-4 py-4">
+                <!-- Page Title -->
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h1 class="h2 fw-bold text-primary">Admin Profile</h1>
+                </div>
+
+                <!-- Alert Messages -->
+                <div id="alertContainer"></div>
+
+                <div class="row">
+                    <!-- Profile Card -->
+                    <div class="col-md-4 mb-4">
+                        <div class="card border-0 shadow-sm text-center">
+                            <div class="card-body py-5">
+                                <div class="mb-3">
+                                    <div class="avatar-circle mx-auto mb-3" style="width: 100px; height: 100px; background: linear-gradient(135deg, #0d6efd 0%, #0b5ed7 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                        <i class="fas fa-user-tie text-white fa-3x"></i>
+                                    </div>
+                                </div>
+                                <h5 class="fw-bold">System Administrator</h5>
+                                <p class="text-muted small">admin@hospital.local</p>
+                                <div class="badge bg-success mb-3">Online</div>
+                                <hr>
+                                <p class="text-muted small mb-0">
+                                    <i class="fas fa-shield-alt"></i> Full Access
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Profile Details -->
+                    <div class="col-md-8 mb-4">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-header bg-light border-bottom">
+                                <h5 class="mb-0"><i class="fas fa-user-cog"></i> Profile Information</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label text-muted small">Full Name</label>
+                                        <p class="fw-bold">System Administrator</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label text-muted small">Email Address</label>
+                                        <p class="fw-bold">admin@hospital.local</p>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label text-muted small">Role</label>
+                                        <p class="fw-bold">Administrator</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label text-muted small">Status</label>
+                                        <p><span class="badge bg-success">Active</span></p>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label text-muted small">Last Login</label>
+                                        <p class="fw-bold" th:text="${#dates.format(#dates.createNow(), 'MMM dd, yyyy HH:mm')}"></p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label text-muted small">Account Created</label>
+                                        <p class="fw-bold">Jan 01, 2024</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Permissions -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-header bg-light border-bottom">
+                                <h5 class="mb-0"><i class="fas fa-lock"></i> Permissions & Access</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <h6 class="fw-bold mb-3">Module Access</h6>
+                                        <ul class="list-unstyled">
+                                            <li class="mb-2">
+                                                <i class="fas fa-check-circle text-success"></i> 
+                                                <strong>Patient Management</strong> - Full Access
+                                            </li>
+                                            <li class="mb-2">
+                                                <i class="fas fa-check-circle text-success"></i> 
+                                                <strong>Doctor Management</strong> - Full Access
+                                            </li>
+                                            <li class="mb-2">
+                                                <i class="fas fa-check-circle text-success"></i> 
+                                                <strong>Clinic Management</strong> - Full Access
+                                            </li>
+                                            <li class="mb-2">
+                                                <i class="fas fa-check-circle text-success"></i> 
+                                                <strong>Medicines Management</strong> - Full Access
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h6 class="fw-bold mb-3">Operations</h6>
+                                        <ul class="list-unstyled">
+                                            <li class="mb-2">
+                                                <i class="fas fa-check-circle text-success"></i> 
+                                                <strong>Create</strong> - Add new records
+                                            </li>
+                                            <li class="mb-2">
+                                                <i class="fas fa-check-circle text-success"></i> 
+                                                <strong>Read</strong> - View all records
+                                            </li>
+                                            <li class="mb-2">
+                                                <i class="fas fa-check-circle text-success"></i> 
+                                                <strong>Update</strong> - Modify records
+                                            </li>
+                                            <li class="mb-2">
+                                                <i class="fas fa-check-circle text-success"></i> 
+                                                <strong>Delete</strong> - Remove records
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- API Information -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-header bg-light border-bottom">
+                                <h5 class="mb-0"><i class="fas fa-code"></i> API Information</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <p><strong>Base URL:</strong></p>
+                                        <code class="text-break">http://localhost:8080/api</code>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <p><strong>Database:</strong></p>
+                                        <code>MongoDB</code>
+                                    </div>
+                                </div>
+                                <hr>
+                                <p class="mb-2"><strong>Available Endpoints:</strong></p>
+                                <ul class="list-unstyled small">
+                                    <li><code>/api/patients</code> - Patient Management API</li>
+                                    <li><code>/api/doctors</code> - Doctor Management API</li>
+                                    <li><code>/api/clinics</code> - Clinic Management API</li>
+                                    <li><code>/api/medicines</code> - Medicines Management API</li>
+                                    <li><code>/api/medicines-tests</code> - Tests Management API</li>
+                                    <li><code>/api/doctor-availability</code> - Doctor Availability API</li>
+                                    <li><code>/api/details</code> - Patient Details API</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Axios -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <!-- Custom JS -->
+    <script src="/js/admin/common.js"></script>
+</body>
+</html>

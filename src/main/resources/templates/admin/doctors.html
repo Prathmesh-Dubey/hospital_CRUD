@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Management - Hospital Admin</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.0/css/dataTables.bootstrap5.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/admin-style.css">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-gradient-primary sticky-top">
+        <div class="container-fluid">
+            <a class="navbar-brand fw-bold" href="/admin">
+                <i class="fas fa-hospital"></i> Hospital Admin Panel
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin">
+                            <i class="fas fa-home"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin/patients">
+                            <i class="fas fa-users"></i> Patients
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/admin/doctors">
+                            <i class="fas fa-stethoscope"></i> Doctors
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin/clinics">
+                            <i class="fas fa-building"></i> Clinics
+                        </a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user-circle"></i> Admin
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="/admin/profile">Profile</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/">Logout</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <nav class="col-md-2 d-md-block bg-light sidebar">
+                <div class="position-sticky pt-3">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/admin">
+                                <i class="fas fa-chart-line"></i> Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/admin/patients">
+                                <i class="fas fa-users"></i> Patients
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="/admin/doctors">
+                                <i class="fas fa-stethoscope"></i> Doctors
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/admin/clinics">
+                                <i class="fas fa-building"></i> Clinics
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/admin/medicines">
+                                <i class="fas fa-pills"></i> Medicines
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/admin/tests">
+                                <i class="fas fa-flask"></i> Tests
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- Main Content -->
+            <main class="col-md-10 ms-sm-auto px-md-4 py-4">
+                <!-- Page Title -->
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h1 class="h2 fw-bold text-primary">Doctor Management</h1>
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#doctorModal">
+                        <i class="fas fa-plus-circle"></i> Add New Doctor
+                    </button>
+                </div>
+
+                <!-- Alert Messages -->
+                <div id="alertContainer"></div>
+
+                <!-- Filters -->
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-header bg-light border-bottom">
+                        <h5 class="mb-0"><i class="fas fa-filter"></i> Search & Filter</h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="filterForm" class="row g-3">
+                            <div class="col-md-3">
+                                <input type="text" class="form-control" id="filterName" placeholder="Doctor Name">
+                            </div>
+                            <div class="col-md-2">
+                                <input type="text" class="form-control" id="filterSpecialization" placeholder="Specialization">
+                            </div>
+                            <div class="col-md-2">
+                                <select class="form-select" id="filterGender">
+                                    <option value="">Select Gender</option>
+                                    <option value="MALE">Male</option>
+                                    <option value="FEMALE">Female</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <input type="text" class="form-control" id="filterHospital" placeholder="Hospital">
+                            </div>
+                            <div class="col-md-3">
+                                <button type="button" class="btn btn-outline-secondary w-100" onclick="resetFilters()">
+                                    <i class="fas fa-redo"></i> Reset
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Table -->
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-light border-bottom">
+                        <h5 class="mb-0"><i class="fas fa-list"></i> All Doctors</h5>
+                    </div>
+                    <div class="table-responsive">
+                        <table id="doctorsTable" class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Doctor ID</th>
+                                    <th>Name</th>
+                                    <th>Specialization</th>
+                                    <th>Hospital</th>
+                                    <th>Phone</th>
+                                    <th>Rating</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="doctorTableBody">
+                                <tr class="text-center">
+                                    <td colspan="7" class="py-4 text-muted">Loading doctors...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Doctor Modal -->
+    <div class="modal fade" id="doctorModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-light border-bottom">
+                    <h5 class="modal-title" id="doctorModalTitle">
+                        <i class="fas fa-user-plus"></i> Add New Doctor
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="doctorForm">
+                        <input type="hidden" id="doctorId">
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="doctorIdInput" class="form-label">Doctor ID</label>
+                                <input type="text" class="form-control" id="doctorIdInput" required 
+                                    placeholder="e.g., DOC-101">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="name" class="form-label">Full Name</label>
+                                <input type="text" class="form-control" id="name" required>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="specialization" class="form-label">Specialization</label>
+                                <input type="text" class="form-control" id="specialization" required 
+                                    placeholder="e.g., Cardiology">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="experience" class="form-label">Experience (Years)</label>
+                                <input type="number" class="form-control" id="experience" required min="0">
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="gender" class="form-label">Gender</label>
+                                <select class="form-select" id="gender" required>
+                                    <option value="">Select Gender</option>
+                                    <option value="MALE">Male</option>
+                                    <option value="FEMALE">Female</option>
+                                    <option value="OTHER">Other</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="qualification" class="form-label">Qualification</label>
+                                <input type="text" class="form-control" id="qualification" 
+                                    placeholder="e.g., MBBS, MD (comma separated)">
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="phone" class="form-label">Phone</label>
+                                <input type="tel" class="form-control" id="phone" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="email" required>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="consultationFee" class="form-label">Consultation Fee</label>
+                                <input type="number" class="form-control" id="consultationFee" required min="0" step="0.01">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="availability" class="form-label">Availability</label>
+                                <select class="form-select" id="availability" required>
+                                    <option value="">Select Status</option>
+                                    <option value="AVAILABLE">Available</option>
+                                    <option value="NOT_AVAILABLE">Not Available</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="hospitalName" class="form-label">Hospital Name</label>
+                                <input type="text" class="form-control" id="hospitalName" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="address" class="form-label">Address</label>
+                                <input type="text" class="form-control" id="address" required>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <label for="rating" class="form-label">Rating (0-5)</label>
+                                <input type="number" class="form-control" id="rating" min="0" max="5" step="0.1">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="saveDoctor()">
+                        <i class="fas fa-save"></i> Save Doctor
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- DataTables JS -->
+    <script src="https://cdn.datatables.net/1.13.0/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.0/js/dataTables.bootstrap5.min.js"></script>
+    <!-- Axios -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+    <script>
+        let dataTable = null;
+        const doctorModal = new bootstrap.Modal(document.getElementById('doctorModal'));
+
+        // Initialize DataTable
+        function initializeTable() {
+            if (dataTable) {
+                dataTable.destroy();
+                dataTable = null;
+            }
+            
+            // Only initialize if there are data rows (not the empty message)
+            const rowCount = $('#doctorsTable tbody tr').length;
+            const hasData = rowCount > 0 && !$('#doctorsTable tbody tr').first().find('td[colspan]').length;
+            
+            if (hasData) {
+                dataTable = $('#doctorsTable').DataTable({
+                    paging: true,
+                    searching: false,
+                    ordering: true,
+                    info: true,
+                    pageLength: 10,
+                    destroy: true,
+                    columnDefs: [
+                        { orderable: false, targets: 6 }
+                    ]
+                });
+            }
+        }
+
+        // Load doctors
+        async function loadDoctors(filters = {}) {
+            try {
+                console.log('Loading doctors with filters:', filters);
+                
+                let url = '/api/doctors?';
+                if (filters.name) url += `name=${encodeURIComponent(filters.name)}&`;
+                if (filters.specialization) url += `specialization=${encodeURIComponent(filters.specialization)}&`;
+                if (filters.gender) url += `gender=${encodeURIComponent(filters.gender)}&`;
+                if (filters.hospitalName) url += `hospitalName=${encodeURIComponent(filters.hospitalName)}&`;
+
+                console.log('API URL:', url);
+                const response = await axios.get(url);
+                const doctors = response.data;
+
+                console.log('Received doctors:', doctors);
+
+                // Destroy existing DataTable first
+                if (dataTable) {
+                    dataTable.destroy();
+                    dataTable = null;
+                }
+
+                $('#doctorsTable tbody').empty();
+
+                if (!doctors || doctors.length === 0) {
+                    $('#doctorsTable tbody').html(
+                        '<tr class="text-center"><td colspan="7" class="py-4 text-muted">No doctors found</td></tr>'
+                    );
+                } else {
+                    doctors.forEach(doctor => {
+                        const row = `
+                            <tr>
+                                <td><strong>${doctor.doctorId || 'N/A'}</strong></td>
+                                <td>${doctor.name || 'N/A'}</td>
+                                <td>${doctor.specialization || 'N/A'}</td>
+                                <td>${doctor.hospitalName || 'N/A'}</td>
+                                <td>${doctor.phone || 'N/A'}</td>
+                                <td>
+                                    <span class="badge bg-warning">${doctor.rating ? doctor.rating.toFixed(1) : 'N/A'}</span>
+                                </td>
+                                <td>
+                                    <button class="btn btn-sm btn-info" onclick="editDoctor('${doctor.doctorId}')">
+                                        <i class="fas fa-edit"></i> Edit
+                                    </button>
+                                    <button class="btn btn-sm btn-danger" onclick="deleteDoctor('${doctor.doctorId}')">
+                                        <i class="fas fa-trash"></i> Delete
+                                    </button>
+                                </td>
+                            </tr>
+                        `;
+                        $('#doctorsTable tbody').append(row);
+                    });
+                    
+                    // Initialize DataTable after adding rows
+                    initializeTable();
+                }
+            } catch (error) {
+                console.error('Error loading doctors:', error);
+                showAlert('Error loading doctors: ' + (error.response?.data?.message || error.message), 'danger');
+                $('#doctorsTable tbody').html(
+                    '<tr class="text-center"><td colspan="7" class="py-4 text-danger">Error loading doctors. Please try again.</td></tr>'
+                );
+            }
+        }
+
+        // Save doctor
+        async function saveDoctor() {
+            const doctorId = document.getElementById('doctorId').value;
+            const formData = {
+                doctorId: document.getElementById('doctorIdInput').value,
+                name: document.getElementById('name').value,
+                specialization: document.getElementById('specialization').value,
+                experience: parseInt(document.getElementById('experience').value) || 0,
+                qualification: document.getElementById('qualification').value ? 
+                    document.getElementById('qualification').value.split(',').map(s => s.trim()) : [],
+                gender: document.getElementById('gender').value,
+                phone: document.getElementById('phone').value,
+                email: document.getElementById('email').value,
+                consultationFee: parseFloat(document.getElementById('consultationFee').value) || 0,
+                availability: document.getElementById('availability').value,
+                hospitalName: document.getElementById('hospitalName').value,
+                address: document.getElementById('address').value,
+                rating: parseFloat(document.getElementById('rating').value) || null
+            };
+
+            try {
+                if (doctorId) {
+                    await axios.put(`/api/doctors/${doctorId}`, formData);
+                    showAlert('Doctor updated successfully', 'success');
+                } else {
+                    await axios.post('/api/doctors', formData);
+                    showAlert('Doctor added successfully', 'success');
+                }
+                doctorModal.hide();
+                resetForm();
+                loadDoctors();
+            } catch (error) {
+                console.error('Error saving doctor:', error);
+                showAlert('Error saving doctor: ' + (error.response?.data?.message || error.message), 'danger');
+            }
+        }
+
+        // Edit doctor
+        async function editDoctor(id) {
+            try {
+                const response = await axios.get(`/api/doctors/${id}`);
+                const doctor = response.data;
+
+                document.getElementById('doctorId').value = id;
+                document.getElementById('doctorIdInput').value = doctor.doctorId || '';
+                document.getElementById('name').value = doctor.name || '';
+                document.getElementById('specialization').value = doctor.specialization || '';
+                document.getElementById('experience').value = doctor.experience || '';
+                document.getElementById('qualification').value = doctor.qualification?.join(', ') || '';
+                document.getElementById('gender').value = doctor.gender || '';
+                document.getElementById('phone').value = doctor.phone || '';
+                document.getElementById('email').value = doctor.email || '';
+                document.getElementById('consultationFee').value = doctor.consultationFee || '';
+                document.getElementById('availability').value = doctor.availability || '';
+                document.getElementById('hospitalName').value = doctor.hospitalName || '';
+                document.getElementById('address').value = doctor.address || '';
+                document.getElementById('rating').value = doctor.rating || '';
+
+                document.getElementById('doctorModalTitle').innerHTML = 
+                    '<i class="fas fa-user-edit"></i> Edit Doctor';
+
+                doctorModal.show();
+            } catch (error) {
+                console.error('Error loading doctor:', error);
+                showAlert('Error loading doctor details', 'danger');
+            }
+        }
+
+        // Delete doctor
+        async function deleteDoctor(id) {
+            if (!confirm('Are you sure you want to delete this doctor?')) return;
+
+            try {
+                await axios.delete(`/api/doctors/${id}`);
+                showAlert('Doctor deleted successfully', 'success');
+                loadDoctors();
+            } catch (error) {
+                console.error('Error deleting doctor:', error);
+                showAlert('Error deleting doctor', 'danger');
+            }
+        }
+
+        // Filter doctors
+        function applyFilters() {
+            const filters = {
+                name: document.getElementById('filterName').value,
+                specialization: document.getElementById('filterSpecialization').value,
+                gender: document.getElementById('filterGender').value,
+                hospitalName: document.getElementById('filterHospital').value
+            };
+            loadDoctors(filters);
+        }
+
+        // Reset filters
+        function resetFilters() {
+            document.getElementById('filterName').value = '';
+            document.getElementById('filterSpecialization').value = '';
+            document.getElementById('filterGender').value = '';
+            document.getElementById('filterHospital').value = '';
+            loadDoctors();
+        }
+
+        // Reset form
+        function resetForm() {
+            document.getElementById('doctorForm').reset();
+            document.getElementById('doctorId').value = '';
+            document.getElementById('doctorModalTitle').innerHTML = 
+                '<i class="fas fa-user-plus"></i> Add New Doctor';
+        }
+
+        // Show alert
+        function showAlert(message, type) {
+            const alertHTML = `
+                <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `;
+            document.getElementById('alertContainer').insertAdjacentHTML('beforeend', alertHTML);
+            setTimeout(() => {
+                document.querySelector('.alert')?.remove();
+            }, 5000);
+        }
+
+        // Event listeners
+        document.getElementById('doctorModal').addEventListener('hidden.bs.modal', resetForm);
+        document.getElementById('filterName').addEventListener('input', applyFilters);
+        document.getElementById('filterSpecialization').addEventListener('input', applyFilters);
+        document.getElementById('filterGender').addEventListener('change', applyFilters);
+        document.getElementById('filterHospital').addEventListener('input', applyFilters);
+
+        // Load doctors on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('Page loaded, loading doctors...');
+            loadDoctors();
+        });
+    </script>
+</body>
+</html>
