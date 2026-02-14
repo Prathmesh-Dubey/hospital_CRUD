@@ -88,4 +88,26 @@ public class WebController {
     public String addMedicinePage() {
         return "admin/medicines-add";
     }
+
+    @GetMapping("/admin/doctorLogin")
+    public String adminDoctorLogin(Model model) {
+        model.addAttribute("pageTitle", "Doctor Login");
+        model.addAttribute("activeTab", "doctorLogin");
+        return "admin/doctor-login";
+    }
+
+    @GetMapping("/admin/doctorRegister")
+    public String adminDoctorRegister(Model model) {
+        model.addAttribute("pageTitle", "Doctor Register");
+        model.addAttribute("activeTab", "doctorRegister");
+        return "admin/doctor-register";
+    }
+
+    @GetMapping("/admin/doctorDashboard")
+    public String adminDoctorDashboard(Model model) {
+        model.addAttribute("pageTitle", "Doctor Dashboard");
+        model.addAttribute("activeTab", "doctorDashboard");
+        return "admin/doctor-dashboard";
+    }
+
 }
