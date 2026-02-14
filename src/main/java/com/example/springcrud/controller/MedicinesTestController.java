@@ -13,7 +13,7 @@ import com.example.springcrud.model.MedicinesTest;
 import com.example.springcrud.repository.MedicinesTestRepository;
 
 @RestController
-@RequestMapping("/api/medicines-tests")
+@RequestMapping("/api/medical-tests")
 public class MedicinesTestController {
 
     @Autowired

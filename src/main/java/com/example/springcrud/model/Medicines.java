@@ -2,6 +2,7 @@ package com.example.springcrud.model;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.index.Indexed;
 
 import java.time.LocalDateTime;
 
@@ -11,7 +12,9 @@ public class Medicines {
     @Id
     private String id;   // maps to _id in MongoDB
 
+    @Indexed(unique = true)
     private String medId;
+
     private String name;
     private String companyName;
 

@@ -11,10 +11,14 @@ import org.springframework.web.bind.annotation.*;
 
 import com.example.springcrud.model.Patient;
 import com.example.springcrud.repository.PatientRepository;
+import com.example.springcrud.service.SequenceGeneratorService;
 
 @RestController
 @RequestMapping("/api/patients")
 public class PatientController {
+
+    @Autowired
+    private SequenceGeneratorService sequenceGeneratorService;
 
     @Autowired
     private PatientRepository patientRepository;
@@ -22,7 +26,15 @@ public class PatientController {
     // CREATE
     @PostMapping
     public ResponseEntity<Patient> createPatient(@RequestBody Patient patient) {
+
+        // Ignore incoming IDs
+        patient.setId(null);
+
+        long seq = sequenceGeneratorService.generateSequence("patient_sequence");
+        patient.setPatientId("PAT-" + (1000 + seq));
+
         Patient savedPatient = patientRepository.save(patient);
+
         return new ResponseEntity<>(savedPatient, HttpStatus.CREATED);
     }
 
@@ -88,7 +100,7 @@ public class PatientController {
         if (patientOptional.isPresent()) {
             Patient patientToUpdate = patientOptional.get();
 
-            patientToUpdate.setPatientId(patient.getPatientId());
+            // DO NOT update patientId
             patientToUpdate.setFullName(patient.getFullName());
             patientToUpdate.setDateOfBirth(patient.getDateOfBirth());
             patientToUpdate.setGender(patient.getGender());

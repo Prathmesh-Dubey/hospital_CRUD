@@ -10,7 +10,7 @@ public class WebController {
     // ================= LANDING PAGE =================
     @GetMapping("/")
     public String index() {
-        return "index";
+        return "admin/dashboard";
     }
 
     // ================= ADMIN PANEL ROUTES =================
@@ -61,5 +61,31 @@ public class WebController {
         model.addAttribute("pageTitle", "Admin Profile");
         model.addAttribute("activeTab", "profile");
         return "admin/profile";
+    }
+
+    @GetMapping("/admin/patients/add")
+    public String adminAddPatient(Model model) {
+        model.addAttribute("pageTitle", "Add Patient");
+        model.addAttribute("activeTab", "patients");
+        return "admin/patients-add";
+    }
+
+    @GetMapping("/admin/clinics/add")
+    public String addClinicPage(Model model) {
+        model.addAttribute("pageTitle", "Add Clinic");
+        model.addAttribute("activeTab", "clinics");
+        return "admin/add-clinic";
+    }
+
+    @GetMapping("/admin/doctors/add")
+    public String adminAddDoctor(Model model) {
+        model.addAttribute("pageTitle", "Add Doctor");
+        model.addAttribute("activeTab", "doctors");
+        return "admin/doctors-add";
+    }
+
+    @GetMapping("/admin/medicines/add")
+    public String addMedicinePage() {
+        return "admin/medicines-add";
     }
 }

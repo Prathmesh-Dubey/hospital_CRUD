@@ -21,9 +21,11 @@ public class MedicinesController {
 
     // CREATE
     @PostMapping
-    public ResponseEntity<Medicines> createMedicine(@RequestBody Medicines medicine) {
-        Medicines savedMedicine = medicinesRepository.save(medicine);
-        return new ResponseEntity<>(savedMedicine, HttpStatus.CREATED);
+    public Medicines save(@RequestBody Medicines medicine) {
+
+        medicine.setMedId("MED-" + System.currentTimeMillis());
+
+        return medicinesRepository.save(medicine);
     }
 
     // READ - Get all medicines (with optional filters)
@@ -34,8 +36,7 @@ public class MedicinesController {
             @RequestParam(required = false) String companyName,
             @RequestParam(required = false) String recordStatus,
             @RequestParam(required = false) Boolean doctorChangeAllowed,
-            @RequestParam(required = false) Double maxPrice
-    ) {
+            @RequestParam(required = false) Double maxPrice) {
 
         List<Medicines> medicines = medicinesRepository.findAll();
 
@@ -46,13 +47,13 @@ public class MedicinesController {
                         (m.getName() != null && m.getName().toLowerCase().contains(name.toLowerCase())))
                 .filter(m -> companyName == null ||
                         (m.getCompanyName() != null &&
-                         companyName.equalsIgnoreCase(m.getCompanyName())))
+                                companyName.equalsIgnoreCase(m.getCompanyName())))
                 .filter(m -> recordStatus == null ||
                         (m.getRecordStatus() != null &&
-                         recordStatus.equalsIgnoreCase(m.getRecordStatus())))
+                                recordStatus.equalsIgnoreCase(m.getRecordStatus())))
                 .filter(m -> doctorChangeAllowed == null ||
                         (m.getDoctorChangeAllowed() != null &&
-                         m.getDoctorChangeAllowed().equals(doctorChangeAllowed)))
+                                m.getDoctorChangeAllowed().equals(doctorChangeAllowed)))
                 .filter(m -> maxPrice == null ||
                         (m.getPrice() != null && m.getPrice() <= maxPrice))
                 .collect(Collectors.toList());
@@ -65,15 +66,14 @@ public class MedicinesController {
     public ResponseEntity<Medicines> getMedicineById(@PathVariable String id) {
         Optional<Medicines> medicine = medicinesRepository.findById(id);
         return medicine.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
-                       .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     // UPDATE (DetailsController style)
     @PutMapping("/{id}")
     public ResponseEntity<Medicines> updateMedicine(
             @PathVariable String id,
-            @RequestBody Medicines medicine
-    ) {
+            @RequestBody Medicines medicine) {
 
         Optional<Medicines> medicineOptional = medicinesRepository.findById(id);
 

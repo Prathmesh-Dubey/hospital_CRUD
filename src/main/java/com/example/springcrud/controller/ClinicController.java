@@ -2,7 +2,11 @@ package com.example.springcrud.controller;
 
 import com.example.springcrud.model.Clinic;
 import com.example.springcrud.repository.ClinicRepository;
+import com.example.springcrud.service.SequenceGeneratorService;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,18 +20,22 @@ import java.util.stream.Collectors;
 public class ClinicController {
 
     @Autowired
+    private SequenceGeneratorService sequenceGeneratorService;
+
+    @Autowired
     private ClinicRepository clinicRepository;
 
     // ================= CREATE =================
     @PostMapping
     public ResponseEntity<Clinic> createClinic(@RequestBody Clinic clinic) {
 
-        if (clinic.getAudit() != null) {
-            clinic.getAudit().setCreatedAt(LocalDateTime.now());
-            clinic.getAudit().setUpdatedAt(LocalDateTime.now());
-        }
+        long seq = sequenceGeneratorService.generateSequence("clinic_sequence");
 
-        return ResponseEntity.ok(clinicRepository.save(clinic));
+        clinic.setClinicId(String.format("CLINIC%03d", seq));
+
+        Clinic savedClinic = clinicRepository.save(clinic);
+
+        return new ResponseEntity<>(savedClinic, HttpStatus.CREATED);
     }
 
     // ================= GET WITH FILTERS =================
@@ -38,8 +46,7 @@ public class ClinicController {
             @RequestParam(required = false) String city,
             @RequestParam(required = false) String department,
             @RequestParam(required = false) String service,
-            @RequestParam(required = false) Boolean appointmentRequired
-    ) {
+            @RequestParam(required = false) Boolean appointmentRequired) {
 
         List<Clinic> clinics = clinicRepository.findAll();
 
@@ -86,24 +93,26 @@ public class ClinicController {
     }
 
     // ================= GET BY ID =================
-    @GetMapping("/{id}")
-    public ResponseEntity<Clinic> getClinicById(@PathVariable String id) {
+    @GetMapping("/{clinicId}")
+    public ResponseEntity<Clinic> getClinicById(@PathVariable String clinicId) {
 
-        Optional<Clinic> clinic = clinicRepository.findById(id);
+        Optional<Clinic> clinic = clinicRepository.findByClinicId(clinicId);
+
         return clinic.map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     // ================= UPDATE =================
-    @PutMapping("/{id}")
+    @PutMapping("/{clinicId}")
     public ResponseEntity<Clinic> updateClinic(
-            @PathVariable String id,
+            @PathVariable String clinicId,
             @RequestBody Clinic updatedClinic) {
 
-        return clinicRepository.findById(id)
+        return clinicRepository.findByClinicId(clinicId)
                 .map(existing -> {
 
-                    updatedClinic.setClinicId(existing.getClinicId());
+                    updatedClinic.setId(existing.getId()); // keep Mongo _id
+                    updatedClinic.setClinicId(existing.getClinicId()); // keep business ID
 
                     if (updatedClinic.getAudit() != null) {
                         updatedClinic.getAudit().setUpdatedAt(LocalDateTime.now());
@@ -115,14 +124,15 @@ public class ClinicController {
     }
 
     // ================= DELETE =================
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteClinic(@PathVariable String id) {
+    @DeleteMapping("/{clinicId}")
+    public ResponseEntity<Void> deleteClinic(@PathVariable String clinicId) {
 
-        if (!clinicRepository.existsById(id)) {
+        if (!clinicRepository.existsByClinicId(clinicId)) {
             return ResponseEntity.notFound().build();
         }
 
-        clinicRepository.deleteById(id);
+        clinicRepository.deleteByClinicId(clinicId);
         return ResponseEntity.noContent().build();
     }
+
 }

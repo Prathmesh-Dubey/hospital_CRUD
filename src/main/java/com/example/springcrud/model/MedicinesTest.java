@@ -3,7 +3,7 @@ package com.example.springcrud.model;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document(collection = "medicines_tests")
+@Document(collection = "medical_tests")
 public class MedicinesTest {
 
     @Id
