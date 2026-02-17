@@ -9,9 +9,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import com.example.springcrud.model.Admin;
+import com.example.springcrud.model.LoginRequest;
+import com.example.springcrud.model.LoginResponse;
 import com.example.springcrud.repository.AdminRepository;
 
 @RestController
@@ -19,14 +22,27 @@ import com.example.springcrud.repository.AdminRepository;
 public class AdminController {
 
     @Autowired
+    private BCryptPasswordEncoder passwordEncoder;
+
+    @Autowired
     private AdminRepository adminRepository;
 
     // ================= CREATE =================
+
     @PostMapping
     public ResponseEntity<Admin> createAdmin(@RequestBody Admin admin) {
+
+        // 🔐 HASH PASSWORD BEFORE SAVING
+        admin.setPassword(passwordEncoder.encode(admin.getPassword()));
+
         admin.setCreatedAt(LocalDateTime.now());
         admin.setUpdatedAt(LocalDateTime.now());
+
         Admin savedAdmin = adminRepository.save(admin);
+
+        // Never return password
+        savedAdmin.setPassword(null);
+
         return new ResponseEntity<>(savedAdmin, HttpStatus.CREATED);
     }
 
@@ -38,22 +54,13 @@ public class AdminController {
             @RequestParam(required = false) String role,
             @RequestParam(required = false) String status,
 
-            @RequestParam(required = false)
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-            LocalDateTime createdAfter,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime createdAfter,
 
-            @RequestParam(required = false)
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-            LocalDateTime createdBefore,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime createdBefore,
 
-            @RequestParam(required = false)
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-            LocalDateTime lastLoginAfter,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime lastLoginAfter,
 
-            @RequestParam(required = false)
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-            LocalDateTime lastLoginBefore
-    ) {
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime lastLoginBefore) {
 
         List<Admin> admins = adminRepository.findAll();
 
@@ -62,43 +69,43 @@ public class AdminController {
                 // username (partial, case-insensitive)
                 .filter(a -> username == null ||
                         (a.getUsername() != null &&
-                         a.getUsername().toLowerCase()
-                           .contains(username.toLowerCase())))
+                                a.getUsername().toLowerCase()
+                                        .contains(username.toLowerCase())))
 
                 // email (exact)
                 .filter(a -> email == null ||
                         (a.getEmail() != null &&
-                         a.getEmail().equalsIgnoreCase(email)))
+                                a.getEmail().equalsIgnoreCase(email)))
 
                 // role
                 .filter(a -> role == null ||
                         (a.getRole() != null &&
-                         a.getRole().equalsIgnoreCase(role)))
+                                a.getRole().equalsIgnoreCase(role)))
 
                 // status
                 .filter(a -> status == null ||
                         (a.getStatus() != null &&
-                         a.getStatus().equalsIgnoreCase(status)))
+                                a.getStatus().equalsIgnoreCase(status)))
 
                 // createdAt >= createdAfter
                 .filter(a -> createdAfter == null ||
                         (a.getCreatedAt() != null &&
-                         a.getCreatedAt().isAfter(createdAfter)))
+                                a.getCreatedAt().isAfter(createdAfter)))
 
                 // createdAt <= createdBefore
                 .filter(a -> createdBefore == null ||
                         (a.getCreatedAt() != null &&
-                         a.getCreatedAt().isBefore(createdBefore)))
+                                a.getCreatedAt().isBefore(createdBefore)))
 
                 // lastLoginAt >= lastLoginAfter
                 .filter(a -> lastLoginAfter == null ||
                         (a.getLastLoginAt() != null &&
-                         a.getLastLoginAt().isAfter(lastLoginAfter)))
+                                a.getLastLoginAt().isAfter(lastLoginAfter)))
 
                 // lastLoginAt <= lastLoginBefore
                 .filter(a -> lastLoginBefore == null ||
                         (a.getLastLoginAt() != null &&
-                         a.getLastLoginAt().isBefore(lastLoginBefore)))
+                                a.getLastLoginAt().isBefore(lastLoginBefore)))
 
                 .collect(Collectors.toList());
 
@@ -110,15 +117,14 @@ public class AdminController {
     public ResponseEntity<Admin> getAdminById(@PathVariable String id) {
         Optional<Admin> admin = adminRepository.findById(id);
         return admin.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
-                    .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     // ================= UPDATE =================
     @PutMapping("/{id}")
     public ResponseEntity<Admin> updateAdmin(
             @PathVariable String id,
-            @RequestBody Admin admin
-    ) {
+            @RequestBody Admin admin) {
 
         Optional<Admin> adminOptional = adminRepository.findById(id);
 
@@ -137,6 +143,29 @@ public class AdminController {
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<?> loginAdmin(@RequestBody LoginRequest request) {
+
+        Optional<Admin> admin = adminRepository.findByPhone(request.getPhone());
+
+        if (admin.isPresent() &&
+                passwordEncoder.matches(request.getPassword(), admin.get().getPassword())) {
+
+            Admin loggedInAdmin = admin.get();
+
+            LoginResponse response = new LoginResponse(
+                    "Login Successful",
+                    loggedInAdmin.getId(), // use ID, not phone
+                    loggedInAdmin.getUsername(),
+                    "ADMIN");
+
+            return ResponseEntity.ok(response);
+        }
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body("Invalid credentials");
     }
 
     // ================= DELETE =================

@@ -2,17 +2,14 @@ package com.example.springcrud.model;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.index.Indexed;
 
 import java.util.List;
 
 @Document(collection = "doctors")
 public class Doctor {
-    @Id
-    private String id; // internal Mongo id
 
-    private String doctorId; // business id
-    // DOC001
+    @Id
+    private String doctorId;
 
     private String name;
     private String specialization;
@@ -23,6 +20,7 @@ public class Doctor {
     private String gender;
     private String phone;
     private String email;
+    private String password;
 
     private Double consultationFee;
     private String availability;
@@ -100,6 +98,14 @@ public class Doctor {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public Double getConsultationFee() {

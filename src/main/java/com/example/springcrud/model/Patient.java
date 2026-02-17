@@ -4,6 +4,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.index.Indexed;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -17,10 +18,12 @@ public class Patient {
     private String patientId;
     
     private String fullName;
-    private LocalDateTime dateOfBirth;
+    private LocalDate dateOfBirth;
     private String gender;
 
-    private String phoneNumber;
+    private String phone;
+    private String password;
+
     private String emailAddress;
     private String residentialAddress;
     private String emergencyContact;
@@ -33,6 +36,8 @@ public class Patient {
 
     private Integer height; // in cm
     private Integer weight; // in kg
+
+    private String doctorId;
 
     // ---------- CONSTRUCTORS ----------
 
@@ -65,11 +70,11 @@ public class Patient {
         this.fullName = fullName;
     }
 
-    public LocalDateTime getDateOfBirth() {
+    public LocalDate getDateOfBirth() {
         return dateOfBirth;
     }
 
-    public void setDateOfBirth(LocalDateTime dateOfBirth) {
+    public void setDateOfBirth(LocalDate dateOfBirth) {
         this.dateOfBirth = dateOfBirth;
     }
 
@@ -81,12 +86,12 @@ public class Patient {
         this.gender = gender;
     }
 
-    public String getPhoneNumber() {
-        return phoneNumber;
+    public String getPhone() {
+        return phone;
     }
 
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 
     public String getEmailAddress() {
@@ -159,5 +164,17 @@ public class Patient {
 
     public void setWeight(Integer weight) {
         this.weight = weight;
+    }
+    public String getPassword() {
+        return password;
+    }
+    public void setPassword(String password) {
+        this.password = password;
+    }
+    public String getDoctorId() {
+        return doctorId;
+    }
+    public void setDoctorId(String doctorId) {
+        this.doctorId = doctorId;
     }
 }

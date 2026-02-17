@@ -1,36 +1,50 @@
 package com.example.springcrud.controller;
 
-import com.example.springcrud.model.Doctor;
-import com.example.springcrud.repository.DoctorRepository;
-import com.example.springcrud.service.SequenceGeneratorService;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import com.example.springcrud.model.LoginResponse;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.example.springcrud.model.Doctor;
+import com.example.springcrud.model.LoginRequest;
+import com.example.springcrud.repository.DoctorRepository;
 
 @RestController
 @RequestMapping("/api/doctors")
 public class DoctorController {
 
         @Autowired
+        private BCryptPasswordEncoder passwordEncoder;
+
+        @Autowired
         private DoctorRepository doctorRepository;
 
         // ================= CREATE =================
-        @Autowired
-        private SequenceGeneratorService sequenceGeneratorService;
-
         @PostMapping
-        public ResponseEntity<Doctor> createDoctor(@RequestBody Doctor doctor) {
+        public ResponseEntity<?> createDoctor(@RequestBody Doctor doctor) {
 
-                long seq = sequenceGeneratorService.generateSequence("doctor_sequence");
-                doctor.setDoctorId(String.format("DOC%03d", seq));
+                doctor.setPassword(passwordEncoder.encode(doctor.getPassword()));
 
                 Doctor savedDoctor = doctorRepository.save(doctor);
+
+                savedDoctor.setPassword(null); // never return password
+
                 return new ResponseEntity<>(savedDoctor, HttpStatus.CREATED);
         }
 
@@ -60,7 +74,8 @@ public class DoctorController {
 
                                 .filter(d -> specialization == null ||
                                                 (d.getSpecialization() != null &&
-                                                                d.getSpecialization().equalsIgnoreCase(specialization)))
+                                                                d.getSpecialization().toLowerCase().contains(
+                                                                                specialization.toLowerCase())))
 
                                 .filter(d -> minExperience == null ||
                                                 (d.getExperience() != null &&
@@ -82,7 +97,8 @@ public class DoctorController {
 
                                 .filter(d -> hospitalName == null ||
                                                 (d.getHospitalName() != null &&
-                                                                d.getHospitalName().equalsIgnoreCase(hospitalName)))
+                                                                d.getHospitalName().toLowerCase()
+                                                                                .contains(hospitalName.toLowerCase())))
 
                                 .filter(d -> minFee == null ||
                                                 (d.getConsultationFee() != null &&
@@ -116,6 +132,31 @@ public class DoctorController {
                 Optional<Doctor> doctor = doctorRepository.findById(doctorId);
                 return doctor.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
                                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+        }
+
+        // ================= auth nby phone and password =================
+        @PostMapping("/login")
+        public ResponseEntity<?> authDoctor(@RequestBody LoginRequest request) {
+
+                Optional<Doctor> doctor = doctorRepository.findByPhone(request.getPhone());
+
+                if (doctor.isPresent() &&
+                                passwordEncoder.matches(request.getPassword(), doctor.get().getPassword())) {
+
+                        Doctor loggedInDoctor = doctor.get();
+
+                        LoginResponse response = new LoginResponse(
+                                        "Login Successful",
+                                        loggedInDoctor.getPhone(), // use ID, not phone
+                                        loggedInDoctor.getName(),
+                                        "DOCTOR");
+
+                        return ResponseEntity.ok(response);
+
+                }
+
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                                .body("Invalid phone or password");
         }
 
         // ================= UPDATE =================

@@ -9,8 +9,8 @@ public class WebController {
 
     // ================= LANDING PAGE =================
     @GetMapping("/")
-    public String index() {
-        return "admin/dashboard";
+    public String Login() {
+        return "Login";
     }
 
     // ================= ADMIN PANEL ROUTES =================
@@ -96,18 +96,5 @@ public class WebController {
         return "admin/doctor-login";
     }
 
-    @GetMapping("/admin/doctorRegister")
-    public String adminDoctorRegister(Model model) {
-        model.addAttribute("pageTitle", "Doctor Register");
-        model.addAttribute("activeTab", "doctorRegister");
-        return "admin/doctor-register";
-    }
-
-    @GetMapping("/admin/doctorDashboard")
-    public String adminDoctorDashboard(Model model) {
-        model.addAttribute("pageTitle", "Doctor Dashboard");
-        model.addAttribute("activeTab", "doctorDashboard");
-        return "admin/doctor-dashboard";
-    }
 
 }

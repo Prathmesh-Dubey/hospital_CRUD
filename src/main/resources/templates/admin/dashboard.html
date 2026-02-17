@@ -1,14 +1,15 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ProAdmin - Final Dashboard</title>
-    
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
+
     <style>
         :root {
             --bg-color: #0f172a;
@@ -33,39 +34,110 @@
             --input-bg: #f1f5f9;
         }
 
-        body { 
-            font-family: 'Inter', system-ui, sans-serif; 
-            background-color: var(--bg-color); 
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background-color: var(--bg-color);
             color: var(--text-main);
             transition: background-color 0.3s, color 0.3s;
         }
 
-        .navbar { background-color: var(--navbar-bg) !important; backdrop-filter: blur(10px); border-bottom: 1px solid var(--border-color); }
-        .text-secondary { color: var(--text-muted) !important; }
-        .text-white-custom { color: var(--text-main) !important; }
+        .navbar {
+            background-color: var(--navbar-bg) !important;
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
+        }
 
-        .search-wrapper { position: relative; width: 400px; }
-        .search-wrapper input { background: var(--input-bg) !important; border: 1px solid var(--accent-blue); border-radius: 12px; color: var(--text-main) !important; padding-left: 45px; }
-        .search-wrapper .fa-search { position: absolute; left: 18px; top: 12px; color: var(--accent-blue); }
+        .text-secondary {
+            color: var(--text-muted) !important;
+        }
 
-        .sidebar { background-color: var(--sidebar-bg); min-height: 100vh; border-right: 1px solid var(--border-color); }
-        .nav-link { color: var(--text-muted); font-weight: 500; padding: 12px 20px; margin: 8px 15px; border-radius: 10px; transition: 0.2s; }
-        .nav-link.active { background: var(--accent-blue); color: #fff; box-shadow: 0 4px 12px rgba(56, 189, 248, 0.3); }
+        .text-white-custom {
+            color: var(--text-main) !important;
+        }
 
-        .stat-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
-        .btn-action { background: var(--card-bg); border: 1px solid var(--border-color); color: var(--text-main); transition: 0.3s; text-decoration: none; display: inline-block; text-align: center; }
-        .btn-action:hover { background: var(--accent-blue); color: white; }
-        .theme-toggle { cursor: pointer; font-size: 1.2rem; color: var(--accent-blue); }
-        
-        canvas { max-height: 300px; width: 100% !important; }
+        .search-wrapper {
+            position: relative;
+            width: 400px;
+        }
+
+        .search-wrapper input {
+            background: var(--input-bg) !important;
+            border: 1px solid var(--accent-blue);
+            border-radius: 12px;
+            color: var(--text-main) !important;
+            padding-left: 45px;
+        }
+
+        .search-wrapper .fa-search {
+            position: absolute;
+            left: 18px;
+            top: 12px;
+            color: var(--accent-blue);
+        }
+
+        .sidebar {
+            background-color: var(--sidebar-bg);
+            min-height: 100vh;
+            border-right: 1px solid var(--border-color);
+        }
+
+        .nav-link {
+            color: var(--text-muted);
+            font-weight: 500;
+            padding: 12px 20px;
+            margin: 8px 15px;
+            border-radius: 10px;
+            transition: 0.2s;
+        }
+
+        .nav-link.active {
+            background: var(--accent-blue);
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(56, 189, 248, 0.3);
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-action {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            transition: 0.3s;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn-action:hover {
+            background: var(--accent-blue);
+            color: white;
+        }
+
+        .theme-toggle {
+            cursor: pointer;
+            font-size: 1.2rem;
+            color: var(--accent-blue);
+        }
+
+        canvas {
+            max-height: 300px;
+            width: 100% !important;
+        }
     </style>
 </head>
+
 <body data-bs-theme="dark">
 
     <nav class="navbar navbar-expand-lg sticky-top">
         <div class="container-fluid px-4">
             <a class="navbar-brand fw-bold d-flex align-items-center" href="/admin" style="color: var(--text-main)">
-                <div class="bg-info rounded-3 p-2 me-2 d-flex align-items-center justify-content-center" style="width:35px; height:35px;">
+                <div class="bg-info rounded-3 p-2 me-2 d-flex align-items-center justify-content-center"
+                    style="width:35px; height:35px;">
                     <i class="fas fa-hospital text-dark"></i>
                 </div>
                 <span>HMS<span class="text-info">PRO</span></span>
@@ -87,14 +159,18 @@
                         <span class="badge bg-info text-dark">System Live</span>
                     </li>
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" data-bs-toggle="dropdown" style="color: var(--text-main)">
-                            <img src="https://ui-avatars.com/api/?name=Admin&background=38bdf8&color=fff" class="rounded-circle me-2" width="32">
+                        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" data-bs-toggle="dropdown"
+                            style="color: var(--text-main)">
+                            <img src="https://ui-avatars.com/api/?name=Admin&background=38bdf8&color=fff"
+                                class="rounded-circle me-2" width="32">
                             <span>Admin</span>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end shadow border-0">
-                            <li><a class="dropdown-item" href="#">Profile</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item text-danger" href="/">Logout</a></li>
+                            <li><a class="dropdown-item" href="/admin/profile">Profile</a></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><a class="dropdown-item text-danger" href="/admin/doctorLogin">Logout</a></li>
                         </ul>
                     </li>
                 </ul>
@@ -107,11 +183,16 @@
             <nav class="col-md-2 d-none d-md-block sidebar px-0">
                 <div class="position-sticky pt-4">
                     <ul class="nav flex-column">
-                        <li class="nav-item"><a class="nav-link active" href="/admin"><i class="fas fa-chart-pie me-2"></i> Dashboard</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/admin/patients"><i class="fas fa-user-injured me-2"></i> Patients</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/admin/doctors"><i class="fas fa-user-md me-2"></i> Doctors</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/admin/clinics"><i class="fas fa-hospital-alt me-2"></i> Clinics</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/admin/medicines"><i class="fas fa-pills me-2"></i> Medicines</a></li>
+                        <li class="nav-item"><a class="nav-link active" href="/admin"><i
+                                    class="fas fa-chart-pie me-2"></i> Dashboard</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/admin/patients"><i
+                                    class="fas fa-user-injured me-2"></i> Patients</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/admin/doctors"><i
+                                    class="fas fa-user-md me-2"></i> Doctors</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/admin/clinics"><i
+                                    class="fas fa-hospital-alt me-2"></i> Clinics</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/admin/medicines"><i
+                                    class="fas fa-pills me-2"></i> Medicines</a></li>
                     </ul>
                 </div>
             </nav>
@@ -119,7 +200,7 @@
             <main class="col-md-10 ms-sm-auto px-md-4 py-4">
                 <div class="d-flex justify-content-between align-items-end mb-4">
                     <div>
-                        <h2 class="fw-bold mb-0 text-white-custom">Dashboard Overview</h2>
+                        <h2 class="fw-bold mb-0 text-white-custom">Admin Dashboard Overview</h2>
                         <p class="text-secondary mb-0">Management Analytics & System Stats</p>
                     </div>
                     <div class="text-end">
@@ -178,10 +259,14 @@
                     </div>
                     <div class="card-body p-4 pt-0">
                         <div class="row g-3">
-                            <div class="col-md-3"><a href="/admin/patients?action=add" class="btn btn-action w-100 py-3 rounded-4">Add Patient</a></div>
-                            <div class="col-md-3"><a href="/admin/doctors?action=add" class="btn btn-action w-100 py-3 rounded-4">Add Doctor</a></div>
-                            <div class="col-md-3"><a href="/admin/medicines?action=add" class="btn btn-action w-100 py-3 rounded-4">Add Medicine</a></div>
-                            <div class="col-md-3"><a href="/admin/clinics?action=add" class="btn btn-action w-100 py-3 rounded-4">Add Clinic</a></div>
+                            <div class="col-md-3"><a href="/admin/patients?action=add"
+                                    class="btn btn-action w-100 py-3 rounded-4">Add Patient</a></div>
+                            <div class="col-md-3"><a href="/admin/doctors?action=add"
+                                    class="btn btn-action w-100 py-3 rounded-4">Add Doctor</a></div>
+                            <div class="col-md-3"><a href="/admin/medicines?action=add"
+                                    class="btn btn-action w-100 py-3 rounded-4">Add Medicine</a></div>
+                            <div class="col-md-3"><a href="/admin/clinics?action=add"
+                                    class="btn btn-action w-100 py-3 rounded-4">Add Clinic</a></div>
                         </div>
                     </div>
                 </div>
@@ -200,7 +285,7 @@
         function initCharts(data) {
             const ctxBar = document.getElementById('barChart').getContext('2d');
             const ctxPie = document.getElementById('pieChart').getContext('2d');
-            
+
             const chartData = {
                 labels: ['Patients', 'Doctors', 'Medicines', 'Clinics'],
                 datasets: [{
@@ -215,8 +300,8 @@
             barChart = new Chart(ctxBar, {
                 type: 'bar',
                 data: chartData,
-                options: { 
-                    responsive: true, 
+                options: {
+                    responsive: true,
                     plugins: { legend: { display: false } },
                     scales: { y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' } } }
                 }
@@ -234,14 +319,14 @@
             try {
                 // Keep values consistent with your endpoints
                 const [p, d, c, m] = await Promise.all([
-                    axios.get('/api/patients'), 
-                    axios.get('/api/doctors'), 
+                    axios.get('/api/patients'),
+                    axios.get('/api/doctors'),
                     axios.get('/api/clinics'),
                     axios.get('/api/medicines')
                 ]);
 
                 const counts = { p: p.data.length, d: d.data.length, c: c.data.length, m: m.data.length };
-                
+
                 $('#totalPatients').text(counts.p);
                 $('#totalDoctors').text(counts.d);
                 $('#totalClinics').text(counts.c);
@@ -256,59 +341,59 @@
 
         // 3. Theme & Search
         // ==========================================
-    // DASHBOARD THEME ENGINE (Global + Charts)
-    // ==========================================
+        // DASHBOARD THEME ENGINE (Global + Charts)
+        // ==========================================
 
-    // 1. On Page Load: Check memory and apply
-    $(document).ready(function() {
-        const savedTheme = localStorage.getItem('hms_theme') || 'dark';
-        applyTheme(savedTheme);
-    });
+        // 1. On Page Load: Check memory and apply
+        $(document).ready(function () {
+            const savedTheme = localStorage.getItem('hms_theme') || 'dark';
+            applyTheme(savedTheme);
+        });
 
-    // 2. On Button Click: Toggle and Save
-    $('#themeSwitcher').on('click', () => {
-        const currentTheme = $('body').attr('data-bs-theme');
-        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-        applyTheme(newTheme);
-    });
+        // 2. On Button Click: Toggle and Save
+        $('#themeSwitcher').on('click', () => {
+            const currentTheme = $('body').attr('data-bs-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            applyTheme(newTheme);
+        });
 
-    // 3. The Function that does the work
-    function applyTheme(theme) {
-        // A. Set Body & Icon
-        $('body').attr('data-bs-theme', theme);
-        localStorage.setItem('hms_theme', theme); // Save to memory
-        
-        const icon = $('#themeIcon');
-        if (theme === 'light') {
-            icon.removeClass('fa-moon').addClass('fa-sun');
-        } else {
-            icon.removeClass('fa-sun').addClass('fa-moon');
+        // 3. The Function that does the work
+        function applyTheme(theme) {
+            // A. Set Body & Icon
+            $('body').attr('data-bs-theme', theme);
+            localStorage.setItem('hms_theme', theme); // Save to memory
+
+            const icon = $('#themeIcon');
+            if (theme === 'light') {
+                icon.removeClass('fa-moon').addClass('fa-sun');
+            } else {
+                icon.removeClass('fa-sun').addClass('fa-moon');
+            }
+
+            // B. UPDATE CHARTS (This is the part from your old code)
+            if (typeof barChart !== 'undefined') {
+                // If Light Mode -> Dark Text (#1e293b)
+                // If Dark Mode -> Light Text (#94a3b8)
+                const newColor = theme === 'light' ? '#1e293b' : '#94a3b8';
+
+                barChart.options.scales.x.ticks.color = newColor;
+                barChart.options.scales.y.ticks.color = newColor; // Also update Y axis
+                barChart.options.plugins.legend.labels.color = newColor; // Update legend
+
+                barChart.update();
+            }
+
+            // Update Pie Chart if it exists
+            if (typeof pieChart !== 'undefined') {
+                const newColor = theme === 'light' ? '#1e293b' : '#94a3b8';
+                pieChart.options.plugins.legend.labels.color = newColor;
+                pieChart.update();
+            }
         }
 
-        // B. UPDATE CHARTS (This is the part from your old code)
-        if (typeof barChart !== 'undefined') {
-            // If Light Mode -> Dark Text (#1e293b)
-            // If Dark Mode -> Light Text (#94a3b8)
-            const newColor = theme === 'light' ? '#1e293b' : '#94a3b8';
-            
-            barChart.options.scales.x.ticks.color = newColor;
-            barChart.options.scales.y.ticks.color = newColor; // Also update Y axis
-            barChart.options.plugins.legend.labels.color = newColor; // Update legend
-            
-            barChart.update();
-        }
-        
-        // Update Pie Chart if it exists
-        if (typeof pieChart !== 'undefined') {
-             const newColor = theme === 'light' ? '#1e293b' : '#94a3b8';
-             pieChart.options.plugins.legend.labels.color = newColor;
-             pieChart.update();
-        }
-    }
-
-        $('#mainSearch').on('input', function() {
+        $('#mainSearch').on('input', function () {
             const term = $(this).val().toLowerCase();
-            $('.searchable-item').each(function() {
+            $('.searchable-item').each(function () {
                 $(this).css('opacity', $(this).data('name').includes(term) ? '1' : '0.1');
             });
         });
@@ -316,4 +401,5 @@
         $(document).ready(loadData);
     </script>
 </body>
+
 </html>
