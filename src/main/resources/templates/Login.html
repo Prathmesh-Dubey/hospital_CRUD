@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>HMS Login</title>
@@ -10,89 +11,91 @@
 
 <body class="bg-light d-flex justify-content-center align-items-center vh-100">
 
-<div class="card shadow p-4" style="width: 350px;">
-    <h4 class="text-center mb-3">HMS Login</h4>
+    <div class="card shadow p-4" style="width: 350px;">
+        <h4 class="text-center mb-3">HMS Login</h4>
 
-    <!-- Role Selection -->
-    <div class="mb-3">
-        <label class="form-label">Login As</label>
-        <select id="role" class="form-select">
-            <option value="doctor">Doctor</option>
-            <option value="admin">Admin</option>
-            <option value="patient">Patient</option>
-        </select>
+        <!-- Role Selection -->
+        <div class="mb-3">
+            <label class="form-label">Login As</label>
+            <select id="role" class="form-select">
+                <option value="doctor">Doctor</option>
+                <option value="admin">Admin</option>
+                <option value="patient">Patient</option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Phone</label>
+            <input type="text" id="phone" class="form-control" placeholder="Enter phone">
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Password</label>
+            <input type="password" id="password" class="form-control" placeholder="Enter password">
+        </div>
+
+        <button class="btn btn-primary w-100" onclick="loginUser()">Login</button>
+
+        <div id="message" class="mt-3 text-center"></div>
     </div>
 
-    <div class="mb-3">
-        <label class="form-label">Phone</label>
-        <input type="text" id="phone" class="form-control" placeholder="Enter phone">
-    </div>
+    <script>
+        function loginUser() {
 
-    <div class="mb-3">
-        <label class="form-label">Password</label>
-        <input type="password" id="password" class="form-control" placeholder="Enter password">
-    </div>
+            const role = document.getElementById("role").value;
+            const phone = document.getElementById("phone").value;
+            const password = document.getElementById("password").value;
 
-    <button class="btn btn-primary w-100" onclick="loginUser()">Login</button>
+            let apiUrl = "";
+            let redirectUrl = "";
 
-    <div id="message" class="mt-3 text-center"></div>
-</div>
+            if (role === "doctor") {
+                apiUrl = "/api/doctors/login";
+                redirectUrl = "/doctor/dashboard";
+            }
+            else if (role === "admin") {
+                apiUrl = "/api/admins/login";
+                redirectUrl = "/admin";
+            }
+            else if (role === "patient") {
+                apiUrl = "/api/patients/login";
+                redirectUrl = "/patient/dashboard";
+            }
 
-<script>
-function loginUser() {
+            fetch(apiUrl, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    phone: phone,
+                    password: password
+                })
+            })
+                .then(response => {
+                    if (response.status === 200) {
+                        return response.json();
+                    } else {
+                        throw new Error("Invalid credentials");
+                    }
+                })
+                .then(data => {
 
-    const role = document.getElementById("role").value;
-    const phone = document.getElementById("phone").value;
-    const password = document.getElementById("password").value;
+                    // Store common session info for ALL roles
+                    localStorage.setItem("userRole", data.role);   // DOCTOR / ADMIN / PATIENT
+                    localStorage.setItem("userId", data.id);       // Mongo _id
+                    localStorage.setItem("userName", data.name);
 
-    let apiUrl = "";
-    let redirectUrl = "";
+                    window.location.href = redirectUrl;
+                })
 
-    if (role === "doctor") {
-        apiUrl = "/api/doctors/login";
-        redirectUrl = "/doctor/dashboard";
-    } 
-    else if (role === "admin") {
-        apiUrl = "/api/admins/login";
-        redirectUrl = "/admin";
-    } 
-    else if (role === "patient") {
-        apiUrl = "/api/patients/login";
-        redirectUrl = "/patient/dashboard";
-    }
-
-    fetch(apiUrl, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            phone: phone,
-            password: password
-        })
-    })
-    .then(response => {
-        if (response.status === 200) {
-            return response.json();
-        } else {
-            throw new Error("Invalid credentials");
+                .catch(error => {
+                    document.getElementById("message").innerHTML =
+                        "<span class='text-danger'>" + error.message + "</span>";
+                });
         }
-    })
-    .then(data => {
-
-        // Store basic login info
-        localStorage.setItem("userRole", role);
-        localStorage.setItem("userId", data.doctorId || data.adminId || data.patientId);
-        localStorage.setItem("userName", data.name);
-
-        window.location.href = redirectUrl;
-    })
-    .catch(error => {
-        document.getElementById("message").innerHTML =
-            "<span class='text-danger'>" + error.message + "</span>";
-    });
-}
-</script>
+    </script>
 
 </body>
+
 </html>

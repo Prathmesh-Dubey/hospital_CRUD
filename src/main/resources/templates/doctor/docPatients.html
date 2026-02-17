@@ -471,7 +471,7 @@
         async function loadPatients(filters = {}) {
             try {
                 // Try fetching from API (Simulated)
-                let url = '/api/patients';
+                let url = '/api/patients/doctor/{doctorId}';
                 // Note: In a real app, you would pass filters to the API query here
 
                 let patients = [];
