@@ -83,7 +83,7 @@
 
                     // Store common session info for ALL roles
                     localStorage.setItem("userRole", data.role);   // DOCTOR / ADMIN / PATIENT
-                    localStorage.setItem("userId", data.id);       // Mongo _id
+                    localStorage.setItem("userId", data.userId);      // Mongo _id
                     localStorage.setItem("userName", data.name);
 
                     window.location.href = redirectUrl;

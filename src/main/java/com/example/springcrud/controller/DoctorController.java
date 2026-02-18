@@ -5,9 +5,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.example.springcrud.model.LoginResponse;
+import com.example.springcrud.model.ResetPasswordRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.springcrud.model.Doctor;
 import com.example.springcrud.model.LoginRequest;
 import com.example.springcrud.repository.DoctorRepository;
+import com.example.springcrud.service.SequenceGeneratorService;
 
 @RestController
 @RequestMapping("/api/doctors")
@@ -35,15 +36,23 @@ public class DoctorController {
         @Autowired
         private DoctorRepository doctorRepository;
 
+        @Autowired
+        private SequenceGeneratorService sequenceGeneratorService;
+
         // ================= CREATE =================
+
         @PostMapping
         public ResponseEntity<?> createDoctor(@RequestBody Doctor doctor) {
+
+                doctor.setId(null); // let Mongo generate _id
+
+                long seq = sequenceGeneratorService.generateSequence("doctor_sequence");
+                doctor.setDoctorId("DOC-" + (1000 + seq));
 
                 doctor.setPassword(passwordEncoder.encode(doctor.getPassword()));
 
                 Doctor savedDoctor = doctorRepository.save(doctor);
-
-                savedDoctor.setPassword(null); // never return password
+                savedDoctor.setPassword(null);
 
                 return new ResponseEntity<>(savedDoctor, HttpStatus.CREATED);
         }
@@ -127,9 +136,9 @@ public class DoctorController {
         }
 
         // ================= READ BY ID =================
-        @GetMapping("/{doctorId}")
-        public ResponseEntity<Doctor> getDoctorById(@PathVariable String doctorId) {
-                Optional<Doctor> doctor = doctorRepository.findById(doctorId);
+        @GetMapping("/{id}")
+        public ResponseEntity<Doctor> getDoctorById(@PathVariable String id) {
+                Optional<Doctor> doctor = doctorRepository.findById(id);
                 return doctor.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
                                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
         }
@@ -147,7 +156,7 @@ public class DoctorController {
 
                         LoginResponse response = new LoginResponse(
                                         "Login Successful",
-                                        loggedInDoctor.getPhone(), // use ID, not phone
+                                        loggedInDoctor.getId(),
                                         loggedInDoctor.getName(),
                                         "DOCTOR");
 
@@ -197,4 +206,45 @@ public class DoctorController {
                         return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
                 }
         }
+
+        @PostMapping("/reset-password")
+        public ResponseEntity<?> resetPassword(@RequestBody ResetPasswordRequest request) {
+
+                try {
+
+                        System.out.println("Incoming request: " + request.getEmail());
+
+                        if (request.getEmail() == null ||
+                                        request.getPhone() == null ||
+                                        request.getNewPassword() == null) {
+
+                                return ResponseEntity.badRequest().body("Missing required fields");
+                        }
+
+                        Optional<Doctor> doctorOptional = doctorRepository.findByEmailAndPhone(
+                                        request.getEmail(),
+                                        request.getPhone());
+
+                        if (!doctorOptional.isPresent()) {
+
+                                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                                                .body("Invalid email or phone");
+                        }
+
+                        Doctor doctor = doctorOptional.get();
+
+                        doctor.setPassword(
+                                        passwordEncoder.encode(request.getNewPassword()));
+
+                        doctorRepository.save(doctor);
+
+                        return ResponseEntity.ok("Password reset successful");
+
+                } catch (Exception e) {
+                        e.printStackTrace();
+                        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                                        .body("Error: " + e.getMessage());
+                }
+        }
+
 }

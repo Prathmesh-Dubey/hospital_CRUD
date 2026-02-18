@@ -177,19 +177,17 @@
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" data-bs-toggle="dropdown"
                             style="color: var(--text-main)">
-                            <img src="https://ui-avatars.com/api/?name=Dr+Alex&background=10b981&color=fff"
-                                class="rounded-circle me-2" width="32">
-                            <span>Dr. Alex Smith</span>
+                            <img id="doctorAvatar" class="rounded-circle me-2" width="32">
+                            <span id="doctorDisplayName"></span>
+
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end shadow border-0" style="background: var(--card-bg);">
-                            <li><a class="dropdown-item text-secondary" href="/doctor/profile">My Profile</a></li>
-                            <li><a class="dropdown-item text-secondary" href="/admin">Admin Panel</a></li>
-                            <li>
-                                <hr class="dropdown-divider bg-secondary">
-                            </li>
-                            <li><a class="dropdown-item text-danger" href="#" onclick="logout()">Logout</a></li>
-                        </ul>
+                            <li><a class="dropdown-item text-secondary" href="/doctor/home">My Profile</a></li>
+                            <hr class="dropdown-divider bg-secondary">
                     </li>
+                    <li><a class="dropdown-item text-danger" href="/" onclick="logout()">Logout</a></li>
+                </ul>
+                </li>
                 </ul>
             </div>
         </div>
@@ -322,9 +320,14 @@
 
             // 🔥 Show logged-in doctor name
             const name = localStorage.getItem("userName");
+
             if (name) {
-                document.querySelector(".dropdown span").innerText = name;
+                document.getElementById("doctorDisplayName").innerText = name;
+
+                const avatar = document.getElementById("doctorAvatar");
+                avatar.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=10b981&color=fff`;
             }
+
 
             loadDataFromBackend();
         });

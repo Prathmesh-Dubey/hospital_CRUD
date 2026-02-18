@@ -13,6 +13,13 @@ public class docWebController {
         return "Login";
     }
 
+    @GetMapping("/doctor/home")
+    public String home(Model model) {
+        model.addAttribute("pageTitle", "Doctor Home");
+        model.addAttribute("activeTab", "home");
+        return "doctor/docProfile";
+    }
+
     @GetMapping("/doctor/doctorRegister")
     public String adminDoctorRegister(Model model) {
         model.addAttribute("pageTitle", "Doctor Register");

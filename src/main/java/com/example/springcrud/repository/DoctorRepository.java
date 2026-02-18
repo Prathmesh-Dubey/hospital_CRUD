@@ -10,4 +10,6 @@ import com.example.springcrud.model.Doctor;
 @Repository
 public interface DoctorRepository extends MongoRepository<Doctor, String> {
     Optional<Doctor> findByPhone(String phone);
+    Optional<Doctor> findByEmailAndPhone(String email, String phone);
+
 }
