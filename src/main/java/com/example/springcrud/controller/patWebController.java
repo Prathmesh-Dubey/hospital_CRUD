@@ -27,11 +27,6 @@ public class patWebController {
         return "patient/patDashboard";
     }
 
-    @GetMapping("/patient/login")
-    public String patientLoginPage() {
-        return "patient/patLogin";
-    }
-
     @GetMapping("/patient/doctors")
     public String patientDoctorsPage() {
         return "patient/patDoctor";
@@ -45,5 +40,9 @@ public class patWebController {
     @GetMapping("/patient/addTest")
     public String patientAddTestPage() {
         return "patient/patAddTest";
+    }
+    @GetMapping("/patient/profile")
+    public String patientProfilePage() {
+        return "patient/patProfile";
     }
 }

@@ -4,11 +4,12 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "medical_tests")
-public class MedicinesTest {
+public class MedicalTest {
 
     @Id
     private String id;   // maps to _id in MongoDB
 
+    private String testId; 
     private String patientId;
     private String doctorId;
 
@@ -23,7 +24,7 @@ public class MedicinesTest {
 
     // ---------- CONSTRUCTORS ----------
 
-    public MedicinesTest() {
+    public MedicalTest() {
     }
 
     // ---------- GETTERS & SETTERS ----------
@@ -98,5 +99,12 @@ public class MedicinesTest {
 
     public void setHistory(String history) {
         this.history = history;
+    }
+     
+    public String getTestId() {
+        return testId;
+    }
+    public void setTestId(String testId) {
+        this.testId = testId;
     }
 }

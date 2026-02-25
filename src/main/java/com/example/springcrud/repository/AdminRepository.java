@@ -9,5 +9,7 @@ import com.example.springcrud.model.Admin;
 public interface AdminRepository extends MongoRepository<Admin, String> {
 
     Optional<Admin> findByPhone(String phone);
+    Optional<Admin> findByEmailAndPhone(String email, String phone);
+
 
 }

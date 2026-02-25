@@ -192,7 +192,7 @@
 
             <div class="collapse navbar-collapse" id="navbarNav">
                 <div class="flex-grow-1 d-flex justify-content-center">
-                
+
 
                     <ul class="navbar-nav ms-auto align-items-center">
                         <li class="nav-item me-4">
@@ -230,10 +230,12 @@
                             Clinic</a></li>
                     <li class="nav-item"><a class="nav-link active" href="/doctor/patients"><i
                                 class="fas fa-user-injured me-2"></i> My Patients</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/doctor/tests"><i class="fas fa-vials me-2"></i> Lab
-                            Reports</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/doctor/prescriptions"><i
+                    <li class="nav-item"><a class="nav-link" href="/doctor/tests"><i class="fas fa-vials me-2"></i>
+                            Medical Tests</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/doctor/view-prescription"><i
                                 class="fas fa-file-prescription me-2"></i> Prescriptions</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/doctor/medicine"><i class="fas fa-pills me-2"></i>
+                            Inventory</a></li>
                 </ul>
             </nav>
 
@@ -250,7 +252,7 @@
 
                 <div class="card stat-card p-4">
                     <div class="card-body p-0">
-                        <form id="patientForm">
+                        <form id="patientForm" autocomplete="off">
 
                             <div class="row mb-3">
                                 <div class="col-md-6">
@@ -259,7 +261,7 @@
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label">Date of Birth</label>
-                                    <input type="datetime-local" class="form-control" id="dateOfBirth" required>
+                                    <input type="date" class="form-control" id="dateOfBirth" required>
                                 </div>
                             </div>
 
@@ -320,7 +322,6 @@
                                     <input type="number" class="form-control" id="weight" min="0" step="0.1">
                                 </div>
                             </div>
-
                             <div class="row mb-3">
                                 <div class="col-md-6">
                                     <label class="form-label">Allergies (comma separated)</label>
@@ -339,9 +340,9 @@
 
                             <div class="mb-3">
                                 <label class="form-label">Password</label>
-                                <input type="password" class="form-control" id="password" required>
+                                <input type="password" class="form-control" id="password" required
+                                    autocomplete="new-password">
                             </div>
-
 
                             <div class="d-flex justify-content-end">
                                 <button type="button" class="btn btn-primary px-4 py-2" onclick="savePatient()">
@@ -361,7 +362,8 @@
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
     <script>
-        
+
+        let patientId = null;
         // --- Theme Engine ---
         $(document).ready(function () {
             const savedTheme = localStorage.getItem('hms_theme') || 'dark';
@@ -385,52 +387,114 @@
                 icon.removeClass('fa-sun').addClass('fa-moon');
             }
         }
+        document.addEventListener("DOMContentLoaded", async () => {
+
+            const params = new URLSearchParams(window.location.search);
+            patientId = params.get("id");
+
+            if (patientId) {
+                await loadPatientForEdit(patientId);
+            }
+
+        });
 
         // --- Logic (Unchanged, just redirection path updated for Doctor view) ---
         async function savePatient() {
 
-    const doctorId = localStorage.getItem("userId");
+            const doctorId = localStorage.getItem("userId");
 
-    if (!doctorId) {
-        alert("Session expired. Please login again.");
-        window.location.href = "/";
-        return;
-    }
+            if (!doctorId) {
+                alert("Session expired. Please login again.");
+                window.location.href = "/";
+                return;
+            }
 
-    const formData = {
-        fullName: document.getElementById('fullName').value,
-        dateOfBirth: document.getElementById('dateOfBirth').value,
-        gender: document.getElementById('gender').value,
-        phone: document.getElementById('phoneNumber').value, // FIXED
-        emailAddress: document.getElementById('emailAddress').value,
-        residentialAddress: document.getElementById('residentialAddress').value,
-        emergencyContact: document.getElementById('emergencyContact').value,
-        bloodGroup: document.getElementById('bloodGroup').value,
-        password: document.getElementById('password').value, // IMPORTANT
-        height: parseInt(document.getElementById('height').value) || null,
-        weight: parseFloat(document.getElementById('weight').value) || null,
-        allergies: document.getElementById('allergies').value
-            ? document.getElementById('allergies').value.split(',').map(s => s.trim())
-            : [],
-        chronicDiseases: document.getElementById('chronicDiseases').value
-            ? document.getElementById('chronicDiseases').value.split(',').map(s => s.trim())
-            : [],
-        currentMedications: document.getElementById('currentMedications').value
-            ? document.getElementById('currentMedications').value.split(',').map(s => s.trim())
-            : []
-    };
+            const formData = {
+                fullName: document.getElementById('fullName').value,
+                dateOfBirth: document.getElementById('dateOfBirth').value,
+                gender: document.getElementById('gender').value,
+                phone: document.getElementById('phoneNumber').value,
+                emailAddress: document.getElementById('emailAddress').value,
+                residentialAddress: document.getElementById('residentialAddress').value,
+                emergencyContact: document.getElementById('emergencyContact').value,
+                bloodGroup: document.getElementById('bloodGroup').value,
+                height: document.getElementById('height').value
+                    ? parseInt(document.getElementById('height').value)
+                    : null,
+                weight: document.getElementById('weight').value
+                    ? parseFloat(document.getElementById('weight').value)
+                    : null,
+                allergies: document.getElementById('allergies').value
+                    ? document.getElementById('allergies').value.split(',').map(s => s.trim())
+                    : [],
+                chronicDiseases: document.getElementById('chronicDiseases').value
+                    ? document.getElementById('chronicDiseases').value.split(',').map(s => s.trim())
+                    : [],
+                currentMedications: document.getElementById('currentMedications').value
+                    ? document.getElementById('currentMedications').value.split(',').map(s => s.trim())
+                    : []
+            };
 
-    try {
-        await axios.post(`/api/patients/doctor/${doctorId}`, formData);
+            try {
 
-        alert("Patient added successfully");
-        window.location.href = "/doctor/patients";
+                if (patientId) {
+                    // UPDATE MODE
+                    await axios.put(`/api/patients/${patientId}`, formData);
+                    alert("Patient updated successfully");
+                } else {
+                    // ADD MODE
+                    formData.password = document.getElementById('password').value;
+                    await axios.post(`/api/patients/doctor/${doctorId}`, formData);
+                    alert("Patient added successfully");
+                }
 
-    } catch (error) {
-        console.error("Full error:", error.response?.data);
-        alert("Error saving patient");
-    }
-}
+                window.location.href = "/doctor/patients";
+
+            } catch (error) {
+                console.error(error.response?.data);
+                alert("Error saving patient");
+            }
+        }
+
+
+        async function loadPatientForEdit(id) {
+            try {
+
+                const response = await axios.get(`/api/patients/${id}`);
+                const p = response.data;
+
+                document.getElementById('fullName').value = p.fullName || "";
+                document.getElementById('dateOfBirth').value = p.dateOfBirth || "";
+                document.getElementById('gender').value = p.gender || "";
+                document.getElementById('bloodGroup').value = p.bloodGroup || "";
+                document.getElementById('phoneNumber').value = p.phone || "";
+                document.getElementById('emailAddress').value = p.emailAddress || "";
+                document.getElementById('residentialAddress').value = p.residentialAddress || "";
+                document.getElementById('emergencyContact').value = p.emergencyContact || "";
+                document.getElementById('height').value = p.height || "";
+                document.getElementById('weight').value = p.weight || "";
+
+                document.getElementById('allergies').value =
+                    p.allergies ? p.allergies.join(", ") : "";
+
+                document.getElementById('chronicDiseases').value =
+                    p.chronicDiseases ? p.chronicDiseases.join(", ") : "";
+
+                document.getElementById('currentMedications').value =
+                    p.currentMedications ? p.currentMedications.join(", ") : "";
+
+                // Hide password field in edit mode
+                document.getElementById('password').parentElement.style.display = "none";
+
+                // Change heading
+                document.querySelector("h2").innerText = "Edit Patient";
+                document.querySelector(".btn-primary").innerHTML =
+                    '<i class="fas fa-save me-2"></i> Update Patient';
+
+            } catch (error) {
+                alert("Failed to load patient");
+            }
+        }
 
     </script>
 </body>

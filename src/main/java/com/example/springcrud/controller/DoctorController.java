@@ -3,6 +3,7 @@ package com.example.springcrud.controller;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.Map;
 
 import com.example.springcrud.model.LoginResponse;
 import com.example.springcrud.model.ResetPasswordRequest;
@@ -245,6 +246,37 @@ public class DoctorController {
                         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                                         .body("Error: " + e.getMessage());
                 }
+        }
+
+        @PutMapping("/reset-password")
+        public ResponseEntity<?> resetPassword(@RequestBody Map<String, String> request) {
+
+                String phone = request.get("phone");
+                String email = request.get("email");
+                String newPassword = request.get("newPassword");
+
+                if (phone == null || email == null || newPassword == null) {
+                        return ResponseEntity.badRequest().body("Missing required fields");
+                }
+
+                Optional<Doctor> optionalDoctor = doctorRepository.findByPhone(phone);
+
+                if (!optionalDoctor.isPresent()) {
+                        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                                        .body("Doctor not found");
+                }
+
+                Doctor doctor = optionalDoctor.get();
+
+                if (!doctor.getEmail().trim().equalsIgnoreCase(email.trim())) {
+                        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                                        .body("Email does not match");
+                }
+
+                doctor.setPassword(passwordEncoder.encode(newPassword));
+                doctorRepository.save(doctor);
+
+                return ResponseEntity.ok("Password reset successful");
         }
 
 }

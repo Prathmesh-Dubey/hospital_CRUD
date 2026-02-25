@@ -186,8 +186,9 @@
             <main class="col-md-10 ms-sm-auto px-md-4 py-4">
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <div>
-                        <h2 class="fw-bold mb-0 text-white-custom">Add New Patient</h2>
-                        <p class="text-secondary mb-0">Register a new patient record</p>
+                        <h2 class="fw-bold mb-0 text-white-custom" id="pageTitle">Add New Patient</h2>
+                        <p class="text-secondary mb-0" id="pageSubtitle">Register a new patient record</p>
+
                     </div>
                     <a href="/admin/patients" class="btn btn-outline-secondary">
                         <i class="fas fa-arrow-left me-2"></i> Back to Patients
@@ -283,6 +284,12 @@
                                 <input type="text" class="form-control" id="currentMedications">
                             </div>
 
+                            <div class="mb-3">
+                                <label class="form-label">Password</label>
+                                <input type="password" class="form-control" id="password">
+                            </div>
+
+
                             <div class="d-flex justify-content-end">
                                 <button type="button" class="btn btn-primary px-4 py-2" onclick="savePatient()">
                                     <i class="fas fa-save me-2"></i> Save Patient
@@ -307,48 +314,62 @@
         // ==========================================
 
         // 1. Check LocalStorage on page load
-        $(document).ready(function () {
-            const savedTheme = localStorage.getItem('hms_theme') || 'dark'; // Default to dark
-            applyTheme(savedTheme);
-        });
-
-        // 2. The Toggle Button Click
-        $('#themeSwitcher').on('click', () => {
-            const currentTheme = $('body').attr('data-bs-theme');
-            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-            applyTheme(newTheme);
-        });
 
         // 3. Function to Apply and Save Theme
         function applyTheme(theme) {
-            // Set the attribute on the body
-            $('body').attr('data-bs-theme', theme);
 
-            // Update the LocalStorage (This remembers your choice!)
+            $('body').attr('data-bs-theme', theme);
             localStorage.setItem('hms_theme', theme);
 
-            // Update the Icon
             const icon = $('#themeIcon');
+
             if (theme === 'light') {
                 icon.removeClass('fa-moon').addClass('fa-sun');
             } else {
                 icon.removeClass('fa-sun').addClass('fa-moon');
             }
-
-            // (Optional) If you have charts, update them here
-            if (typeof dataTable !== 'undefined') {
-                // redraw tables if needed to fix colors
-                dataTable.draw();
-            }
         }
+
+        let editMode = false;
+        let patientId = null;
+
+        $(document).ready(function () {
+
+            const savedTheme = localStorage.getItem('hms_theme') || 'dark';
+            applyTheme(savedTheme);
+
+            const pathParts = window.location.pathname.split('/');
+            const lastPart = pathParts[pathParts.length - 1];
+
+            if (window.location.pathname.includes('/edit/')) {
+                editMode = true;
+                patientId = lastPart;
+
+                document.getElementById('pageTitle').innerText = "Edit Patient";
+                document.getElementById('pageSubtitle').innerText = "Update patient record";
+
+                loadPatient(patientId);
+            }
+        });
+        // Load saved theme on page load
+
+
+        // Toggle theme when icon clicked
+        $('#themeSwitcher').on('click', function () {
+            const currentTheme = $('body').attr('data-bs-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            applyTheme(newTheme);
+        });
 
         // --- Original Logic ---
         async function savePatient() {
+
             const formData = {
+                password: document.getElementById('password').value,
                 fullName: document.getElementById('fullName').value,
                 dateOfBirth: document.getElementById('dateOfBirth').value,
                 gender: document.getElementById('gender').value,
-                phoneNumber: document.getElementById('phoneNumber').value,
+                phone: document.getElementById('phoneNumber').value,
                 emailAddress: document.getElementById('emailAddress').value,
                 residentialAddress: document.getElementById('residentialAddress').value,
                 emergencyContact: document.getElementById('emergencyContact').value,
@@ -364,16 +385,51 @@
                 currentMedications: document.getElementById('currentMedications').value
                     ? document.getElementById('currentMedications').value.split(',').map(s => s.trim())
                     : []
+
             };
 
             try {
-                await axios.post('/api/patients', formData);
-                alert("Patient added successfully");
-                // Redirect back to patient list
+                if (editMode) {
+                    await axios.put(`/api/patients/${patientId}`, formData);
+                    alert("Patient updated successfully");
+                } else {
+                    await axios.post('/api/patients', formData);
+                    alert("Patient added successfully");
+                }
+
                 window.location.href = "/admin/patients";
+
             } catch (error) {
-                console.error("Error saving patient:", error);
                 alert("Error saving patient");
+                console.error(error);
+            }
+        }
+
+        async function loadPatient(id) {
+            try {
+                const response = await axios.get(`/api/patients/${id}`);
+                const patient = response.data;
+
+                document.getElementById('fullName').value = patient.fullName || '';
+                document.getElementById('dateOfBirth').value = patient.dateOfBirth || '';
+                document.getElementById('gender').value = patient.gender || '';
+                document.getElementById('bloodGroup').value = patient.bloodGroup || '';
+                document.getElementById('phoneNumber').value = patient.phone || '';
+                document.getElementById('emailAddress').value = patient.emailAddress || '';
+                document.getElementById('residentialAddress').value = patient.residentialAddress || '';
+                document.getElementById('emergencyContact').value = patient.emergencyContact || '';
+                document.getElementById('height').value = patient.height || '';
+                document.getElementById('weight').value = patient.weight || '';
+                document.getElementById('allergies').value = patient.allergies?.join(', ') || '';
+                document.getElementById('chronicDiseases').value = patient.chronicDiseases?.join(', ') || '';
+                document.getElementById('currentMedications').value = patient.currentMedications?.join(', ') || '';
+
+                // Store id for update
+                document.getElementById('patientForm').dataset.id = id;
+
+            } catch (error) {
+                alert("Error loading patient data");
+                console.error(error);
             }
         }
     </script>

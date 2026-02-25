@@ -10,12 +10,14 @@ import java.time.LocalDateTime;
 public class Medicines {
 
     @Id
-    private String id;   // maps to _id in MongoDB
+    private String id; // maps to _id in MongoDB
 
     @Indexed(unique = true)
     private String medId;
 
-    private String name;
+    private String doctorId;
+    private String patientId;
+    private String medicineName;
     private String companyName;
 
     private String recordStatus;
@@ -28,6 +30,7 @@ public class Medicines {
 
     private LocalDateTime expiryDate;
     private Double price;
+    private String name;
 
     private LocalDateTime startDate;
     private LocalDateTime endDate;
@@ -159,5 +162,24 @@ public class Medicines {
 
     public void setSpecialInstructions(String specialInstructions) {
         this.specialInstructions = specialInstructions;
+    }
+    public String getDoctorId() {
+        return doctorId;
+    
+    }
+    public String getPatientId() {
+        return patientId;
+    }
+    public void setPatientId(String patientId) {
+        this.patientId = patientId;
+    }
+    public void setDoctorId(String doctorId) {
+        this.doctorId = doctorId;
+    }
+    public String getMedicineName() {
+        return medicineName;
+    }
+    public void setMedicineName(String medicineName) {
+        this.medicineName = medicineName;
     }
 }

@@ -2,15 +2,18 @@ package com.example.springcrud.model;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.index.Indexed;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Document(collection = "prescriptions")
-public class Details {
+public class Prescription {
 
     @Id
+    private String id;
+    @Indexed(unique = true)
     private String prescriptionId;
     private String recordStatus;
 
@@ -124,36 +127,6 @@ public class Details {
 
         public void setEmail(String email) {
             this.email = email;
-        }
-    }
-
-    public static class Address {
-        private String city;
-        private String state;
-        private String country;
-
-        public String getCity() {
-            return city;
-        }
-
-        public void setCity(String city) {
-            this.city = city;
-        }
-
-        public String getState() {
-            return state;
-        }
-
-        public void setState(String state) {
-            this.state = state;
-        }
-
-        public String getCountry() {
-            return country;
-        }
-
-        public void setCountry(String country) {
-            this.country = country;
         }
     }
 
@@ -280,12 +253,6 @@ public class Details {
     public static class Medication {
         private String medicineId;
         private String medicineName;
-        private String dosage;
-        private String route;
-        private String frequency;
-        private LocalDate startDate;
-        private LocalDate endDate;
-        private String instructions;
 
         public String getMedicineId() {
             return medicineId;
@@ -303,53 +270,6 @@ public class Details {
             this.medicineName = medicineName;
         }
 
-        public String getDosage() {
-            return dosage;
-        }
-
-        public void setDosage(String dosage) {
-            this.dosage = dosage;
-        }
-
-        public String getRoute() {
-            return route;
-        }
-
-        public void setRoute(String route) {
-            this.route = route;
-        }
-
-        public String getFrequency() {
-            return frequency;
-        }
-
-        public void setFrequency(String frequency) {
-            this.frequency = frequency;
-        }
-
-        public LocalDate getStartDate() {
-            return startDate;
-        }
-
-        public void setStartDate(LocalDate startDate) {
-            this.startDate = startDate;
-        }
-
-        public LocalDate getEndDate() {
-            return endDate;
-        }
-
-        public void setEndDate(LocalDate endDate) {
-            this.endDate = endDate;
-        }
-
-        public String getInstructions() {
-            return instructions;
-        }
-
-        public void setInstructions(String instructions) {
-            this.instructions = instructions;
-        }
     }
 
     public static class Procedure {
@@ -402,10 +322,6 @@ public class Details {
 
     public static class Investigation {
         private String testName;
-        private LocalDate advisedDate;
-        private LocalDate performedDate;
-        private String resultSummary;
-        private String remarks;
 
         public String getTestName() {
             return testName;
@@ -413,38 +329,6 @@ public class Details {
 
         public void setTestName(String testName) {
             this.testName = testName;
-        }
-
-        public LocalDate getAdvisedDate() {
-            return advisedDate;
-        }
-
-        public void setAdvisedDate(LocalDate advisedDate) {
-            this.advisedDate = advisedDate;
-        }
-
-        public LocalDate getPerformedDate() {
-            return performedDate;
-        }
-
-        public void setPerformedDate(LocalDate performedDate) {
-            this.performedDate = performedDate;
-        }
-
-        public String getResultSummary() {
-            return resultSummary;
-        }
-
-        public void setResultSummary(String resultSummary) {
-            this.resultSummary = resultSummary;
-        }
-
-        public String getRemarks() {
-            return remarks;
-        }
-
-        public void setRemarks(String remarks) {
-            this.remarks = remarks;
         }
     }
 
@@ -615,5 +499,13 @@ public class Details {
 
     public void setAudit(Audit audit) {
         this.audit = audit;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 }

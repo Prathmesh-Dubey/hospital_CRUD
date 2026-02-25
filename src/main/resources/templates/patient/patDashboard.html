@@ -20,7 +20,7 @@
             --text-muted: #94a3b8;
             --navbar-bg: rgba(30, 41, 59, 0.95);
             /* Patient Accent: Teal/Green to match system */
-            --accent-primary: #2dd4bf; 
+            --accent-primary: #2dd4bf;
             --border-color: rgba(255, 255, 255, 0.05);
             --input-bg: rgba(15, 23, 42, 0.6);
             --navbar-height: 70px;
@@ -51,7 +51,9 @@
             backdrop-filter: blur(10px);
             border-bottom: 1px solid var(--border-color);
             position: fixed;
-            top: 0; left: 0; right: 0;
+            top: 0;
+            left: 0;
+            right: 0;
             height: var(--navbar-height);
             z-index: 1030;
         }
@@ -61,7 +63,8 @@
             border-right: 1px solid var(--border-color);
             position: fixed;
             top: var(--navbar-height);
-            bottom: 0; left: 0;
+            bottom: 0;
+            left: 0;
             width: 16.666667%;
             overflow-y: auto;
             padding-top: 1.5rem;
@@ -74,28 +77,80 @@
         }
 
         @media (max-width: 767.98px) {
-            .sidebar { position: static; width: 100%; height: auto; border-right: none; }
-            main { margin-left: 0; width: 100%; }
+            .sidebar {
+                position: static;
+                width: 100%;
+                height: auto;
+                border-right: none;
+            }
+
+            main {
+                margin-left: 0;
+                width: 100%;
+            }
         }
 
         /* --- COMPONENTS --- */
-        .nav-link { color: var(--text-muted); font-weight: 500; padding: 12px 20px; margin: 8px 15px; border-radius: 10px; transition: 0.2s; }
-        .nav-link:hover { background: rgba(45, 212, 191, 0.1); color: var(--accent-primary); }
-        .nav-link.active { background: var(--accent-primary); color: #0f172a; box-shadow: 0 4px 12px rgba(45, 212, 191, 0.3); font-weight: 600; }
+        .nav-link {
+            color: var(--text-muted);
+            font-weight: 500;
+            padding: 12px 20px;
+            margin: 8px 15px;
+            border-radius: 10px;
+            transition: 0.2s;
+        }
 
-        .stat-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
-        
-        .search-wrapper { position: relative; width: 400px; }
+        .nav-link:hover {
+            background: rgba(45, 212, 191, 0.1);
+            color: var(--accent-primary);
+        }
+
+        .nav-link.active {
+            background: var(--accent-primary);
+            color: #0f172a;
+            box-shadow: 0 4px 12px rgba(45, 212, 191, 0.3);
+            font-weight: 600;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .search-wrapper {
+            position: relative;
+            width: 400px;
+        }
+
         .search-wrapper input {
-            background: var(--input-bg) !important; border: 1px solid var(--border-color); border-radius: 12px; color: var(--text-main) !important; padding-left: 45px;
-        }
-        .search-wrapper .fa-search {
-            position: absolute; left: 18px; top: 12px; color: var(--accent-primary);
+            background: var(--input-bg) !important;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            color: var(--text-main) !important;
+            padding-left: 45px;
         }
 
-        .text-white-custom { color: var(--text-main) !important; }
-        .text-accent { color: var(--accent-primary) !important; }
-        .theme-toggle { cursor: pointer; color: var(--accent-primary); }
+        .search-wrapper .fa-search {
+            position: absolute;
+            left: 18px;
+            top: 12px;
+            color: var(--accent-primary);
+        }
+
+        .text-white-custom {
+            color: var(--text-main) !important;
+        }
+
+        .text-accent {
+            color: var(--accent-primary) !important;
+        }
+
+        .theme-toggle {
+            cursor: pointer;
+            color: var(--accent-primary);
+        }
     </style>
 </head>
 
@@ -103,8 +158,10 @@
 
     <nav class="navbar navbar-expand-lg">
         <div class="container-fluid px-4">
-            <a class="navbar-brand fw-bold d-flex align-items-center" href="/patient/dashboard" style="color: var(--text-main)">
-                <div class="bg-primary bg-opacity-25 rounded-3 p-2 me-2 d-flex align-items-center justify-content-center" style="width:35px; height:35px;">
+            <a class="navbar-brand fw-bold d-flex align-items-center" href="/patient/dashboard"
+                style="color: var(--text-main)">
+                <div class="bg-primary bg-opacity-25 rounded-3 p-2 me-2 d-flex align-items-center justify-content-center"
+                    style="width:35px; height:35px;">
                     <i class="fas fa-heartbeat text-info"></i>
                 </div>
                 <span>HMS<span class="text-accent">PATIENT</span></span>
@@ -123,13 +180,19 @@
                         </div>
                     </li>
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" data-bs-toggle="dropdown" style="color: var(--text-main)">
-                            <img src="https://ui-avatars.com/api/?name=John+Doe&background=2dd4bf&color=0f172a" class="rounded-circle me-2" width="32">
-                            <span>John Doe</span>
+                        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" data-bs-toggle="dropdown"
+                            style="color: var(--text-main)">
+
+                            <img id="patientAvatar" class="rounded-circle me-2" width="32">
+
+                            <span id="patientName">Patient</span>
                         </a>
+
                         <ul class="dropdown-menu dropdown-menu-end shadow border-0" style="background: var(--card-bg);">
                             <li><a class="dropdown-item text-secondary" href="/patient/profile">My Profile</a></li>
-                            <li><hr class="dropdown-divider bg-secondary"></li>
+                            <li>
+                                <hr class="dropdown-divider bg-secondary">
+                            </li>
                             <li><a class="dropdown-item text-danger" href="/logout">Logout</a></li>
                         </ul>
                     </li>
@@ -140,7 +203,7 @@
 
     <div class="container-fluid">
         <div class="row">
-            
+
             <nav class="col-md-2 sidebar px-0">
                 <ul class="nav flex-column">
                     <li class="nav-item">
@@ -167,7 +230,7 @@
             </nav>
 
             <main class="col-md-10 py-4">
-                
+
                 <div class="d-flex justify-content-between align-items-end mb-4">
                     <div>
                         <h2 class="fw-bold mb-0 text-white-custom">Patient Portal</h2>
@@ -176,7 +239,8 @@
                     <div class="text-end">
                         <div class="p-2 px-3 rounded-3 stat-card">
                             <i class="far fa-calendar-check text-accent me-2"></i>
-                            <span class="text-white-custom" th:text="${#dates.format(#dates.createNow(), 'MMM dd, yyyy')}">Date</span>
+                            <span class="text-white-custom"
+                                th:text="${#dates.format(#dates.createNow(), 'MMM dd, yyyy')}">Date</span>
                         </div>
                     </div>
                 </div>
@@ -255,6 +319,7 @@
         $(document).ready(function () {
             const savedTheme = localStorage.getItem('hms_theme') || 'dark';
             applyTheme(savedTheme);
+            loadLoggedInPatient();
             loadPublicData();
         });
 
@@ -269,7 +334,7 @@
             localStorage.setItem('hms_theme', theme);
             const icon = $('#themeIcon');
             theme === 'light' ? icon.removeClass('fa-moon').addClass('fa-sun') : icon.removeClass('fa-sun').addClass('fa-moon');
-            
+
             const newColor = theme === 'light' ? '#1e293b' : '#94a3b8';
             if (myBarChart) {
                 myBarChart.options.scales.x.ticks.color = newColor;
@@ -358,6 +423,36 @@
                 alert("Could not load dashboard data. Check database connection.");
             }
         }
+        async function loadLoggedInPatient() {
+
+            const userId = localStorage.getItem("userId");
+            const role = localStorage.getItem("userRole");
+            const storedName = localStorage.getItem("userName");
+
+            if (!userId || role !== "PATIENT") {
+                window.location.href = "/";
+                return;
+            }
+
+            // Instant UI update (feels fast)
+            document.getElementById("patientName").innerText = storedName;
+            document.getElementById("patientAvatar").src =
+                `https://ui-avatars.com/api/?name=${storedName}&background=2dd4bf&color=0f172a`;
+
+            try {
+                const response = await axios.get(`/api/patients/${userId}`);
+                const patient = response.data;
+
+                // Update with fresh DB value (if changed)
+                document.getElementById("patientName").innerText = patient.fullName;
+                document.getElementById("patientAvatar").src =
+                    `https://ui-avatars.com/api/?name=${patient.fullName}&background=2dd4bf&color=0f172a`;
+
+            } catch (error) {
+                console.error("Failed to verify patient:", error);
+            }
+        }
     </script>
 </body>
+
 </html>

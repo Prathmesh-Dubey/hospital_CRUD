@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/clinics")
 public class ClinicController {
 
+    
     @Autowired
     private SequenceGeneratorService sequenceGeneratorService;
 
@@ -41,6 +42,7 @@ public class ClinicController {
     // ================= GET WITH FILTERS =================
     @GetMapping
     public ResponseEntity<List<Clinic>> getClinics(
+            @RequestParam(required = false) String clinicName,
             @RequestParam(required = false) String clinicType,
             @RequestParam(required = false) String status,
             @RequestParam(required = false) String city,
@@ -50,42 +52,60 @@ public class ClinicController {
 
         List<Clinic> clinics = clinicRepository.findAll();
 
-        if (clinicType != null) {
+        if (clinicType != null && !clinicType.trim().isEmpty()) {
+            String type = clinicType.trim().toLowerCase();
             clinics = clinics.stream()
-                    .filter(c -> clinicType.equalsIgnoreCase(c.getClinicType()))
+                    .filter(c -> c.getClinicType() != null &&
+                            c.getClinicType().toLowerCase().equals(type))
                     .collect(Collectors.toList());
         }
 
-        if (status != null) {
+        if (status != null && !status.trim().isEmpty()) {
+            String st = status.trim().toLowerCase();
             clinics = clinics.stream()
-                    .filter(c -> status.equalsIgnoreCase(c.getStatus()))
+                    .filter(c -> c.getStatus() != null &&
+                            c.getStatus().toLowerCase().equals(st))
                     .collect(Collectors.toList());
         }
 
-        if (city != null) {
+        if (city != null && !city.trim().isEmpty()) {
+            String ct = city.trim().toLowerCase();
             clinics = clinics.stream()
                     .filter(c -> c.getAddress() != null &&
-                            city.equalsIgnoreCase(c.getAddress().getCity()))
+                            c.getAddress().getCity() != null &&
+                            c.getAddress().getCity().toLowerCase().contains(ct))
                     .collect(Collectors.toList());
         }
 
-        if (department != null) {
+        if (department != null && !department.trim().isEmpty()) {
+            String dept = department.trim().toLowerCase();
             clinics = clinics.stream()
                     .filter(c -> c.getDepartments() != null &&
-                            c.getDepartments().contains(department))
+                            c.getDepartments().stream()
+                                    .anyMatch(d -> d.toLowerCase().contains(dept)))
                     .collect(Collectors.toList());
         }
 
-        if (service != null) {
+        if (service != null && !service.trim().isEmpty()) {
+            String srv = service.trim().toLowerCase();
             clinics = clinics.stream()
                     .filter(c -> c.getServices() != null &&
-                            c.getServices().contains(service))
+                            c.getServices().stream()
+                                    .anyMatch(s -> s.toLowerCase().contains(srv)))
                     .collect(Collectors.toList());
         }
 
         if (appointmentRequired != null) {
             clinics = clinics.stream()
                     .filter(c -> appointmentRequired.equals(c.getAppointmentRequired()))
+                    .collect(Collectors.toList());
+        }
+
+        if (clinicName != null && !clinicName.trim().isEmpty()) {
+            String name = clinicName.trim().toLowerCase();
+            clinics = clinics.stream()
+                    .filter(c -> c.getClinicName() != null &&
+                            c.getClinicName().toLowerCase().contains(name))
                     .collect(Collectors.toList());
         }
 

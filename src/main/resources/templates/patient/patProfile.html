@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Patient Profile - HMS</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        body {
+            background-color: #0f172a;
+            color: #f1f5f9;
+        }
+
+        .profile-card {
+            background: #1e293b;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .section-title {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding-bottom: 8px;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .label {
+            color: #94a3b8;
+            font-size: 0.85rem;
+        }
+
+        .value {
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container mt-5">
+        <div class="profile-card">
+
+            <!-- Header -->
+            <div class="text-center mb-4">
+                <img id="profileAvatar" class="rounded-circle mb-3" width="100">
+                <h3 id="profileName"></h3>
+                <small id="profilePatientId" class="text-muted"></small>
+            </div>
+
+            <!-- Personal Information -->
+            <div class="mb-4">
+                <div class="section-title">Personal Information</div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <div class="label">Date of Birth</div>
+                        <div class="value" id="dob"></div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="label">Gender</div>
+                        <div class="value" id="gender"></div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="label">Blood Group</div>
+                        <div class="value" id="bloodGroup"></div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="label">Height / Weight</div>
+                        <div class="value" id="hw"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contact Information -->
+            <div>
+                <div class="section-title">Contact Information</div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <div class="label">Phone</div>
+                        <div class="value" id="phone"></div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="label">Email</div>
+                        <div class="value" id="email"></div>
+                    </div>
+                    <div class="col-md-12 mb-3">
+                        <div class="label">Address</div>
+                        <div class="value" id="address"></div>
+                    </div>
+                    <div class="col-md-12 mb-3">
+                        <div class="label">Emergency Contact</div>
+                        <div class="value" id="emergency"></div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <hr class="my-4">
+
+        <div>
+            <div class="section-title">Change Password</div>
+
+            <div class="row">
+
+                <div class="col-md-6 mb-3">
+                    <label class="label">Confirm Phone</label>
+                    <input type="text" id="confirmPhone" class="form-control bg-dark text-white">
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label class="label">Confirm Email</label>
+                    <input type="email" id="confirmEmail" class="form-control bg-dark text-white">
+                </div>
+
+                <div class="col-md-12 mb-3">
+                    <label class="label">New Password</label>
+                    <div class="input-group">
+                        <input type="password" id="newPassword" class="form-control bg-dark text-white">
+                        <button class="btn btn-outline-light" type="button" onclick="togglePassword()">
+                            <i id="eyeIcon" class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="col-md-12">
+                    <button class="btn btn-primary w-100" onclick="changePassword()">
+                        Update Password
+                    </button>
+                </div>
+
+                <div class="col-md-12 mt-2 text-center" id="passwordMessage"></div>
+
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+    <script>
+        async function loadProfile() {
+
+            const userId = localStorage.getItem("userId");
+            const role = localStorage.getItem("userRole");
+
+            if (!userId || role !== "PATIENT") {
+                window.location.href = "/";
+                return;
+            }
+
+            try {
+                const response = await axios.get(`/api/patients/${userId}`);
+                const p = response.data;
+
+                document.getElementById("profileName").innerText = p.fullName;
+                document.getElementById("profilePatientId").innerText = p.patientId;
+
+                document.getElementById("profileAvatar").src =
+                    `https://ui-avatars.com/api/?name=${p.fullName}&background=2dd4bf&color=0f172a&size=128`;
+
+                document.getElementById("dob").innerText = p.dateOfBirth || "N/A";
+                document.getElementById("gender").innerText = p.gender || "N/A";
+                document.getElementById("bloodGroup").innerText = p.bloodGroup || "N/A";
+
+                document.getElementById("hw").innerText =
+                    (p.height ? p.height + " cm" : "") +
+                    (p.weight ? " / " + p.weight + " kg" : "") || "N/A";
+
+                document.getElementById("phone").innerText = p.phone || "N/A";
+                document.getElementById("email").innerText = p.emailAddress || "N/A";
+                document.getElementById("address").innerText = p.residentialAddress || "N/A";
+                document.getElementById("emergency").innerText = p.emergencyContact || "N/A";
+
+            } catch (error) {
+                console.error("Profile load failed:", error);
+            }
+        }
+        function togglePassword() {
+            const input = document.getElementById("newPassword");
+            const icon = document.getElementById("eyeIcon");
+
+            if (input.type === "password") {
+                input.type = "text";
+                icon.classList.remove("fa-eye");
+                icon.classList.add("fa-eye-slash");
+            } else {
+                input.type = "password";
+                icon.classList.remove("fa-eye-slash");
+                icon.classList.add("fa-eye");
+            }
+        }
+        async function changePassword() {
+
+            const userId = localStorage.getItem("userId");
+            const phone = document.getElementById("confirmPhone").value.trim();
+            const email = document.getElementById("confirmEmail").value.trim();
+            const newPassword = document.getElementById("newPassword").value.trim();
+            const msg = document.getElementById("passwordMessage");
+
+            msg.innerHTML = "";
+
+            // Session check
+            if (!userId) {
+                msg.innerHTML = "<span class='text-danger'>Session expired. Please login again.</span>";
+                return;
+            }
+
+            // Field validation
+            if (!phone || !email || !newPassword) {
+                msg.innerHTML = "<span class='text-danger'>All fields are required</span>";
+                return;
+            }
+
+            if (newPassword.length < 6) {
+                msg.innerHTML = "<span class='text-danger'>Password must be at least 6 characters</span>";
+                return;
+            }
+
+            try {
+
+                await axios.put("/api/patients/change-password", {
+                    userId: userId,
+                    phone: phone,
+                    email: email,
+                    newPassword: newPassword
+                });
+
+                msg.innerHTML = "<span class='text-success'>Password updated successfully</span>";
+
+                document.getElementById("newPassword").value = "";
+
+            } catch (error) {
+
+                msg.innerHTML =
+                    "<span class='text-danger'>" +
+                    (error.response?.data || "Password update failed") +
+                    "</span>";
+            }
+        }
+
+        loadProfile();
+    </script>
+
+</body>
+
+</html>

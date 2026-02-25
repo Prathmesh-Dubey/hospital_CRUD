@@ -3,6 +3,8 @@ package com.example.springcrud.controller;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+
 
 @Controller
 public class docWebController {
@@ -53,6 +55,7 @@ public class docWebController {
     public String doctorClinicsPage() {
         return "doctor/docClinic";
     }
+
     @GetMapping("/doctor/addClinic")
     public String doctorAddClinicPage() {
         return "doctor/docAddClinic";
@@ -67,4 +70,51 @@ public class docWebController {
     public String doctorAddTestPage() {
         return "doctor/docAddTest";
     }
+
+    @GetMapping("/doctor/prescription")
+    public String doctorPrescriptionPage() {
+        return "doctor/docPrescription";
+    }
+
+    @GetMapping("/doctor/view-prescription")
+    public String doctorViewPrescriptionPage() {
+        return "doctor/docViewPrescription";
+    }
+
+    @GetMapping("/doctor/prescriptions/{patientId}")
+    public String doctorPrescriptionHistoryPage() {
+        return "doctor/historyPrescription"; // Page 2
+    }
+
+    @GetMapping("/doctor/prescription/view/{id}")
+    public String doctorPrescriptionDetailPage() {
+        return "doctor/docPrescriptionDetail"; // Page 3
+    }
+
+    @GetMapping("/doctor/medicine")
+    public String doctorMedicinePage() {
+        return "doctor/docInventory";
+    }
+
+    @GetMapping("/doctor/addMedicine")
+    public String doctorAddMedicinePage() {
+        return "doctor/docAddMedicine";
+    }
+
+    @GetMapping("/doctor/tests/history/{patientId}")
+    public String doctorViewTestPage(
+            @PathVariable String patientId,
+            Model model) {
+
+        model.addAttribute("patientId", patientId);
+        return "doctor/docHistoryTest";
+    }
+    @GetMapping("/doctor/tests/view/{testId}")
+public String doctorViewSingleTest(
+        @PathVariable String testId,
+        Model model) {
+
+    model.addAttribute("testId", testId);
+    return "doctor/docViewTest";
+}
 }

@@ -18,7 +18,8 @@
             --text-main: #f1f5f9;
             --text-muted: #94a3b8;
             --navbar-bg: rgba(30, 41, 59, 0.95);
-            --accent-primary: #10b981; /* Doctor Green */
+            --accent-primary: #10b981;
+            /* Doctor Green */
             --border-color: rgba(255, 255, 255, 0.05);
             --input-bg: rgba(15, 23, 42, 0.6);
             --navbar-height: 70px;
@@ -49,7 +50,9 @@
             backdrop-filter: blur(10px);
             border-bottom: 1px solid var(--border-color);
             position: fixed;
-            top: 0; left: 0; right: 0;
+            top: 0;
+            left: 0;
+            right: 0;
             height: var(--navbar-height);
             z-index: 1030;
         }
@@ -59,7 +62,8 @@
             border-right: 1px solid var(--border-color);
             position: fixed;
             top: var(--navbar-height);
-            bottom: 0; left: 0;
+            bottom: 0;
+            left: 0;
             width: 16.666667%;
             overflow-y: auto;
             padding-top: 1.5rem;
@@ -72,38 +76,106 @@
         }
 
         @media (max-width: 767.98px) {
-            .sidebar { position: static; width: 100%; height: auto; border-right: none; }
-            main { margin-left: 0; width: 100%; }
+            .sidebar {
+                position: static;
+                width: 100%;
+                height: auto;
+                border-right: none;
+            }
+
+            main {
+                margin-left: 0;
+                width: 100%;
+            }
         }
 
         /* --- COMPONENTS --- */
-        .nav-link { color: var(--text-muted); font-weight: 500; padding: 12px 20px; margin: 8px 15px; border-radius: 10px; transition: 0.2s; }
-        .nav-link:hover { background: rgba(16, 185, 129, 0.1); color: var(--accent-primary); }
-        .nav-link.active { background: var(--accent-primary); color: #fff; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); }
-
-        .stat-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
-        
-        .form-control, .form-select {
-            background-color: var(--input-bg); border: 1px solid var(--border-color); color: var(--text-main); border-radius: 8px; padding: 10px 15px;
-        }
-        .form-control:focus, .form-select:focus {
-            background-color: var(--input-bg); color: var(--text-main); border-color: var(--accent-primary); box-shadow: 0 0 0 0.25rem rgba(16, 185, 129, 0.25);
+        .nav-link {
+            color: var(--text-muted);
+            font-weight: 500;
+            padding: 12px 20px;
+            margin: 8px 15px;
+            border-radius: 10px;
+            transition: 0.2s;
         }
 
-        .form-label { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 0.5rem; }
-        .section-title { border-bottom: 1px solid var(--border-color); color: var(--accent-primary); font-size: 1rem; margin-bottom: 1.5rem; padding-bottom: 0.5rem; font-weight: 600; }
-        
-        .theme-toggle { cursor: pointer; font-size: 1.2rem; color: var(--accent-primary); }
-        .text-accent { color: var(--accent-primary) !important; }
+        .nav-link:hover {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--accent-primary);
+        }
 
-        .btn-primary { background-color: var(--accent-primary); border-color: var(--accent-primary); color: #fff; font-weight: 600; }
-        .btn-primary:hover { background-color: #059669; border-color: #059669; }
+        .nav-link.active {
+            background: var(--accent-primary);
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-control,
+        .form-select {
+            background-color: var(--input-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            border-radius: 8px;
+            padding: 10px 15px;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            background-color: var(--input-bg);
+            color: var(--text-main);
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 0.25rem rgba(16, 185, 129, 0.25);
+        }
+
+        .form-label {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .section-title {
+            border-bottom: 1px solid var(--border-color);
+            color: var(--accent-primary);
+            font-size: 1rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .theme-toggle {
+            cursor: pointer;
+            font-size: 1.2rem;
+            color: var(--accent-primary);
+        }
+
+        .text-accent {
+            color: var(--accent-primary) !important;
+        }
+
+        .btn-primary {
+            background-color: var(--accent-primary);
+            border-color: var(--accent-primary);
+            color: #fff;
+            font-weight: 600;
+        }
+
+        .btn-primary:hover {
+            background-color: #059669;
+            border-color: #059669;
+        }
     </style>
 </head>
 
 <body data-bs-theme="dark">
 
-   <nav class="navbar navbar-expand-lg">
+    <nav class="navbar navbar-expand-lg">
         <div class="container-fluid px-4">
             <a class="navbar-brand fw-bold d-flex align-items-center" href="/doctor/dashboard"
                 style="color: var(--text-main)">
@@ -116,7 +188,7 @@
 
             <div class="collapse navbar-collapse" id="navbarNav">
                 <div class="flex-grow-1 d-flex justify-content-center">
-                
+
 
                     <ul class="navbar-nav ms-auto align-items-center">
                         <li class="nav-item me-4">
@@ -146,14 +218,21 @@
 
     <div class="container-fluid">
         <div class="row">
-            
+
             <nav class="col-md-2 sidebar px-0">
                 <ul class="nav flex-column">
-                    <li class="nav-item"><a class="nav-link" href="/doctor/dashboard"><i class="fas fa-chart-line me-2"></i> Overview</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/doctor/clinics"><i class="fas fa-hospital me-2"></i> Clinic</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/doctor/patients"><i class="fas fa-user-injured me-2"></i> My Patients</a></li>
-                    <li class="nav-item"><a class="nav-link active" href="/doctor/tests"><i class="fas fa-vials me-2"></i> Lab Reports</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/doctor/prescriptions"><i class="fas fa-file-prescription me-2"></i> Prescriptions</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/doctor/dashboard"><i
+                                class="fas fa-chart-line me-2"></i> Overview</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/doctor/clinics"><i class="fas fa-hospital me-2"></i>
+                            Clinic</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/doctor/patients"><i
+                                class="fas fa-user-injured me-2"></i> My Patients</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="/doctor/tests"><i
+                                class="fas fa-vials me-2"></i> Medical Tests</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/doctor/view-prescription"><i
+                                class="fas fa-file-prescription me-2"></i> Prescriptions</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/doctor/medicine"><i class="fas fa-pills me-2"></i>
+                            Inventory</a></li>
                 </ul>
             </nav>
 
@@ -176,11 +255,8 @@
                             <div class="row mb-3">
                                 <div class="col-md-6">
                                     <label class="form-label">Patient ID</label>
-                                    <input type="text" class="form-control" id="patientId" placeholder="e.g. PAT-45" required>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label">Doctor ID</label>
-                                    <input type="text" class="form-control" id="doctorId" value="DOC-45" required>
+                                    <input type="text" class="form-control" id="patientId" placeholder="e.g. PAT-45"
+                                        required>
                                 </div>
                             </div>
 
@@ -188,7 +264,8 @@
                             <div class="row mb-3">
                                 <div class="col-md-4">
                                     <label class="form-label">Test Name</label>
-                                    <input type="text" class="form-control" id="testName" placeholder="e.g. RBC Count" required>
+                                    <input type="text" class="form-control" id="testName" placeholder="e.g. RBC Count"
+                                        required>
                                 </div>
                                 <div class="col-md-4">
                                     <label class="form-label">Category</label>
@@ -202,18 +279,21 @@
                                 </div>
                                 <div class="col-md-4">
                                     <label class="form-label">Price (₹)</label>
-                                    <input type="number" class="form-control" id="price" placeholder="e.g. 250" required>
+                                    <input type="number" class="form-control" id="price" placeholder="e.g. 250"
+                                        required>
                                 </div>
                             </div>
 
                             <div class="row mb-3">
                                 <div class="col-md-6">
                                     <label class="form-label">Description / Methodology</label>
-                                    <textarea class="form-control" id="description" rows="3" placeholder="e.g. Red cell count via automated analyzer"></textarea>
+                                    <textarea class="form-control" id="description" rows="3"
+                                        placeholder="e.g. Red cell count via automated analyzer"></textarea>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label">Clinical History / Notes</label>
-                                    <textarea class="form-control" id="history" rows="3" placeholder="e.g. 2026-02-15: 5.0 million"></textarea>
+                                    <textarea class="form-control" id="history" rows="3"
+                                        placeholder="e.g. 2026-02-15: 5.0 million"></textarea>
                                 </div>
                             </div>
 
@@ -228,17 +308,16 @@
                                 </div>
                             </div>
 
-                            <div class="d-flex justify-content-end">
-                                <button type="button" class="btn btn-primary px-4 py-2" onclick="saveTest()">
-                                    <i class="fas fa-save me-2"></i> Save Test Record
-                                </button>
-                            </div>
-
-                        </form>
+                            <button id="saveBtn" type="button" class="btn btn-primary px-4 py-2">
+                                <i class="fas fa-save me-2"></i> Save Test Record
+                            </button>
                     </div>
+
+                    </form>
                 </div>
-            </main>
         </div>
+        </main>
+    </div>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -247,7 +326,21 @@
 
     <script>
         // --- Theme Engine ---
-        $(document).ready(function() {
+        $(document).ready(function () {
+            const role = localStorage.getItem("userRole");
+            const doctorId = localStorage.getItem("userId");
+            const doctorName = localStorage.getItem("userName");
+
+            if (role !== "DOCTOR" || !doctorId) {
+                window.location.href = "/";
+                return;
+            }
+
+            if (doctorName) {
+                document.getElementById("doctorDisplayName").innerText = doctorName;
+                document.getElementById("doctorAvatar").src =
+                    `https://ui-avatars.com/api/?name=${encodeURIComponent(doctorName)}&background=10b981&color=fff`;
+            }
             const savedTheme = localStorage.getItem('hms_theme') || 'dark';
             applyTheme(savedTheme);
         });
@@ -271,28 +364,84 @@
 
         // --- Save Logic ---
         async function saveTest() {
-            const formData = {
-                patientId: document.getElementById('patientId').value,
-                doctorId: document.getElementById('doctorId').value,
-                testName: document.getElementById('testName').value,
-                category: document.getElementById('category').value,
-                price: parseFloat(document.getElementById('price').value) || 0,
-                description: document.getElementById('description').value,
-                resultStatus: document.getElementById('resultStatus').value,
-                history: document.getElementById('history').value,
-                timestamp: new Date().toISOString()
-            };
+
+            const role = localStorage.getItem("userRole");
+            const doctorId = localStorage.getItem("userId");
+
+            if (role !== "DOCTOR" || !doctorId) {
+                alert("Session expired. Please login again.");
+                window.location.href = "/";
+                return;
+            }
+
+            const button = document.getElementById("saveBtn");
+            button.disabled = true;
+            button.innerHTML = "Saving...";
 
             try {
-                await axios.post('/api/medical-tests', formData);
+
+                const patientId = document.getElementById('patientId').value.trim();
+                const testName = document.getElementById('testName').value.trim();
+                const category = document.getElementById('category').value;
+                const price = parseFloat(document.getElementById('price').value);
+                const description = document.getElementById('description').value.trim();
+                const resultStatus = document.getElementById('resultStatus').value;
+                const history = document.getElementById('history').value.trim();
+
+                if (!patientId || !testName || !category || isNaN(price) || price <= 0) {
+                    alert("Please fill all required fields correctly.");
+                    button.disabled = false;
+                    button.innerHTML = '<i class="fas fa-save me-2"></i> Save Test Record';
+                    return;
+                }
+
+                const formData = {
+                    patientId,
+                    testName,
+                    category,
+                    price,
+                    description,
+                    resultStatus,
+                    history,
+                    timestamp: new Date().toISOString()
+                };
+
+                const response = await axios.post(
+                    `/api/medical-tests/doctor/${doctorId}`,
+                    formData
+                );
+
+                const savedTest = response.data;
+
                 alert("Test record added successfully");
-                window.location.href = "/doctor/tests";
+
+                // Redirect to view page of that specific test
+                window.location.href = `/doctor/tests/view/${savedTest.id}`;
+
             } catch (error) {
-                console.error("Error saving test:", error);
-                alert("Test record added (Demo Mode)");
-                window.location.href = "/doctor/tests";
+                console.error(error);
+                alert("Failed to save test record.");
+                button.disabled = false;
+                button.innerHTML = '<i class="fas fa-save me-2"></i> Save Test Record';
             }
         }
+
+        document.addEventListener("DOMContentLoaded", function () {
+
+            // Extract patientId from query param
+            const urlParams = new URLSearchParams(window.location.search);
+            const patientIdFromUrl = urlParams.get("patientId");
+
+            if (patientIdFromUrl) {
+                const patientInput = document.getElementById("patientId");
+                patientInput.value = patientIdFromUrl;
+                patientInput.readOnly = true; // lock it
+            }
+
+            const saveBtn = document.getElementById("saveBtn");
+            saveBtn.addEventListener("click", saveTest);
+        });
     </script>
 </body>
+
 </html>

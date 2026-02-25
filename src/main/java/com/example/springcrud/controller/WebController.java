@@ -3,6 +3,7 @@ package com.example.springcrud.controller;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 @Controller
 public class WebController {
@@ -96,5 +97,16 @@ public class WebController {
         return "admin/doctor-login";
     }
 
+    @GetMapping("/admin/patients/edit/{id}")
+    public String editPatient(@PathVariable String id, Model model) {
+        model.addAttribute("patientId", id);
+        model.addAttribute("pageTitle", "Edit Patient");
+        model.addAttribute("activeTab", "patients");
+        return "admin/patients-add";
+    }
+    @GetMapping("/forgot-password")
+    public String forgotPasswordPage() {
+        return "forgot-password";
+    }
 
 }

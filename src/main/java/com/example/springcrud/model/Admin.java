@@ -17,6 +17,7 @@ public class Admin {
     private String email;
 
     // Store HASHED password only (BCrypt)
+
     private String password;
 
     // ADMIN / SUPER_ADMIN (future use)

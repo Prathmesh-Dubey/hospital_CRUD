@@ -27,7 +27,7 @@ public class DoctorAvailabilityController {
         DoctorAvailability savedAvailability = availabilityRepository.save(availability);
         return new ResponseEntity<>(savedAvailability, HttpStatus.CREATED);
     }
-
+    
     // READ - Get all availability (with optional filters)
     @GetMapping
     public ResponseEntity<List<DoctorAvailability>> getAllAvailability(

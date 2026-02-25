@@ -4,15 +4,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HMS - Doctor Dashboard</title>
+    <title>HMS - Prescriptions</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js/dist/chart.umd.min.js"></script>
 
     <style>
         /* --- PRO DOCTOR THEME ENGINE --- */
         :root {
+            color-scheme: dark light;
             --bg-color: #0f172a;
             --sidebar-bg: #1e293b;
             --card-bg: #1e293b;
@@ -146,6 +146,42 @@
             cursor: pointer;
             color: var(--accent-primary);
         }
+
+        /* Adjust Table for Theme */
+        .table {
+            color: var(--text-main);
+            --bs-table-bg: transparent;
+            --bs-table-color: var(--text-main);
+            --bs-table-border-color: var(--border-color);
+            --bs-table-hover-bg: rgba(255, 255, 255, 0.02);
+            --bs-table-hover-color: var(--text-main);
+        }
+
+        [data-bs-theme="light"] .table {
+            --bs-table-hover-bg: rgba(0, 0, 0, 0.02);
+        }
+
+        .form-control {
+            background-color: var(--input-bg) !important;
+            border: 1px solid var(--border-color);
+            color: var(--text-main) !important;
+        }
+        .form-control:focus {
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 0.25rem rgba(16, 185, 129, 0.15);
+        }
+
+        .btn-primary-custom {
+            background-color: var(--accent-primary);
+            border-color: var(--accent-primary);
+            color: white;
+        }
+
+        .btn-primary-custom:hover {
+            background-color: #059669;
+            border-color: #059669;
+            color: white;
+        }
     </style>
 </head>
 
@@ -177,8 +213,8 @@
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" data-bs-toggle="dropdown"
                             style="color: var(--text-main)">
-                            <img id="doctorAvatar" class="rounded-circle me-2" width="32">
-                            <span id="doctorDisplayName"></span>
+                            <img id="doctorAvatar" class="rounded-circle me-2" width="32" src="">
+                            <span id="doctorDisplayName">Doctor</span>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end shadow border-0" style="background: var(--card-bg);">
                             <li><a class="dropdown-item text-secondary" href="/doctor/home">My Profile</a></li>
@@ -195,17 +231,18 @@
 
     <div class="container-fluid">
         <div class="row">
+
             <nav class="col-md-2 sidebar px-0">
                 <ul class="nav flex-column">
-                    <li class="nav-item"><a class="nav-link active" href="/doctor/dashboard"><i
+                    <li class="nav-item"><a class="nav-link" href="/doctor/dashboard"><i
                                 class="fas fa-chart-line me-2"></i> Overview</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/doctor/clinics"><i
-                                class="fas fa-hospital me-2"></i>Clinic</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/doctor/clinics"><i class="fas fa-hospital me-2"></i>
+                            Clinic</a></li>
                     <li class="nav-item"><a class="nav-link" href="/doctor/patients"><i
                                 class="fas fa-user-injured me-2"></i> My Patients</a></li>
                     <li class="nav-item"><a class="nav-link" href="/doctor/tests"><i class="fas fa-vials me-2"></i>
                             Medical Tests</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/doctor/view-prescription"><i
+                    <li class="nav-item"><a class="nav-link active" href="/doctor/view-prescription"><i
                                 class="fas fa-file-prescription me-2"></i> Prescriptions</a></li>
                     <li class="nav-item"><a class="nav-link" href="/doctor/medicine"><i class="fas fa-pills me-2"></i>
                             Inventory</a></li>
@@ -214,75 +251,46 @@
 
             <main class="col-md-10 py-4 px-4">
 
-                <div class="d-flex justify-content-between align-items-end mb-4">
+                <div class="d-flex justify-content-between align-items-end mb-4 border-bottom pb-3" style="border-color: var(--border-color) !important;">
                     <div>
-                        <h2 class="fw-bold mb-0 text-white-custom">Doctor Dashboard Overview</h2>
-                        <p class="text-secondary mb-0">Live data from your assigned database.</p>
+                        <h2 class="fw-bold mb-0 text-white-custom"><i class="fas fa-file-prescription text-success me-2"></i> Patient Prescriptions</h2>
+                        <p class="text-secondary mb-0 mt-1">View patient history or issue new prescriptions.</p>
                     </div>
-                    <div class="text-end">
-                        <div class="p-2 px-3 rounded-3 stat-card">
-                            <i class="far fa-clock text-success me-2"></i>
-                            <span class="text-white-custom"
-                                th:text="${#dates.format(#dates.createNow(), 'MMM dd, yyyy')}">Date</span>
+                </div>
+
+                <div class="card stat-card p-3 mb-4">
+                    <div class="row g-2">
+                        <div class="col-md-4">
+                            <input type="text" id="filterName" class="form-control" placeholder="Filter by Name">
+                        </div>
+                        <div class="col-md-4">
+                            <input type="text" id="filterPhone" class="form-control" placeholder="Filter by Phone">
+                        </div>
+                        <div class="col-md-4">
+                            <input type="text" id="filterEmail" class="form-control" placeholder="Filter by Email">
                         </div>
                     </div>
                 </div>
 
-                <div class="row mb-4">
-                    <div class="col-md-4 mb-3">
-                        <div class="card stat-card p-3 h-100">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <h6 class="text-secondary small fw-bold mb-1">MY PATIENTS</h6>
-                                    <h2 class="fw-bold mb-0 text-white-custom" id="totalPatients">0</h2>
-                                </div>
-                                <div class="bg-primary bg-opacity-10 p-3 rounded-circle"><i
-                                        class="fas fa-users text-primary"></i></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <div class="card stat-card p-3 h-100">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <h6 class="text-secondary small fw-bold mb-1">MEDICAL TESTS (MINE)</h6>
-                                    <h2 class="fw-bold mb-0 text-success" id="totalTests">0</h2>
-                                </div>
-                                <div class="bg-success bg-opacity-10 p-3 rounded-circle"><i
-                                        class="fas fa-flask text-success"></i></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <div class="card stat-card p-3 h-100">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <h6 class="text-secondary small fw-bold mb-1">MY MEDICINES</h6>
-                                    <h2 class="fw-bold mb-0 text-info" id="totalMedicines">0</h2>
-                                </div>
-                                <div class="bg-info bg-opacity-10 p-3 rounded-circle"><i
-                                        class="fas fa-pills text-info"></i></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-md-7 mb-4">
-                        <div class="card stat-card p-4 h-100">
-                            <h5 class="fw-bold mb-4 text-white-custom">Resource Distribution</h5>
-                            <div style="height: 300px; width: 100%;">
-                                <canvas id="barChart"></canvas>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-5 mb-4">
-                        <div class="card stat-card p-4 h-100">
-                            <h5 class="fw-bold mb-4 text-white-custom">System Ratio</h5>
-                            <div style="height: 300px; width: 100%;">
-                                <canvas id="pieChart"></canvas>
-                            </div>
-                        </div>
+                <div class="card stat-card p-4">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Patient ID</th>
+                                    <th>Full Name</th>
+                                    <th>Phone</th>
+                                    <th>Email</th>
+                                    <th class="text-end">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="patientTableBody">
+                                <tr>
+                                    <td colspan="5" class="text-center py-4 text-muted"><i
+                                            class="fas fa-spinner fa-spin me-2"></i> Loading patients...</td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
 
@@ -292,34 +300,40 @@
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
     <script>
+        let allPatients = [];
+
+        // --- 1. AUTHENTICATION & INITIALIZATION ---
         const role = localStorage.getItem("userRole");
         const doctorId = localStorage.getItem("userId");
 
         if (role !== "DOCTOR" || !doctorId) {
-            window.location.href = "/";
+            window.location.href = "/"; // Redirect if unauthorized
         }
 
-
-        // --- 1. THEME LOGIC ---
         $(document).ready(function () {
+            // Setup Theme
             const savedTheme = localStorage.getItem('hms_theme') || 'dark';
             applyTheme(savedTheme);
 
-            // 🔥 Show logged-in doctor name
+            // Load Doctor Profile Info
             const name = localStorage.getItem("userName");
-
             if (name) {
                 document.getElementById("doctorDisplayName").innerText = name;
-                const avatar = document.getElementById("doctorAvatar");
-                avatar.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=10b981&color=fff`;
+                document.getElementById("doctorAvatar").src = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=10b981&color=fff`;
             }
 
-            loadDataFromBackend();
+            // Bind filter events
+            document.getElementById("filterName").addEventListener("input", applyFilters);
+            document.getElementById("filterPhone").addEventListener("input", applyFilters);
+            document.getElementById("filterEmail").addEventListener("input", applyFilters);
+
+            // Fetch Patients
+            loadPatients();
         });
 
+        // --- 2. THEME LOGIC ---
         $('#themeSwitcher').on('click', () => {
             const currentTheme = $('body').attr('data-bs-theme');
             const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
@@ -331,101 +345,6 @@
             localStorage.setItem('hms_theme', theme);
             const icon = $('#themeIcon');
             theme === 'light' ? icon.removeClass('fa-moon').addClass('fa-sun') : icon.removeClass('fa-sun').addClass('fa-moon');
-
-            const newColor = theme === 'light' ? '#1e293b' : '#94a3b8';
-            if (myBarChart) {
-                myBarChart.options.scales.x.ticks.color = newColor;
-                myBarChart.options.scales.y.ticks.color = newColor;
-                myBarChart.update();
-            }
-            if (myPieChart) {
-                myPieChart.options.plugins.legend.labels.color = newColor;
-                myPieChart.update();
-            }
-        }
-
-        // --- 2. DATA & CHARTS ---
-        let myBarChart = null;
-        let myPieChart = null;
-
-        function initCharts(data) {
-            const ctxBar = document.getElementById('barChart').getContext('2d');
-            const ctxPie = document.getElementById('pieChart').getContext('2d');
-            const textColor = $('body').attr('data-bs-theme') === 'light' ? '#1e293b' : '#94a3b8';
-
-            // Using the REAL count data passed from the backend
-            const commonData = {
-                labels: ['Patients', 'Medical Tests', 'Medicines'],
-                datasets: [{
-                    label: 'Count',
-                    data: [data.p, data.t, data.m],
-                    backgroundColor: ['#38bdf8', '#10b981', '#6366f1'],
-                    borderWidth: 0,
-                    borderRadius: 6
-                }]
-            };
-
-            if (myBarChart) myBarChart.destroy();
-            myBarChart = new Chart(ctxBar, {
-                type: 'bar',
-                data: commonData,
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        y: { beginAtZero: true, ticks: { color: textColor, precision: 0 }, grid: { color: 'rgba(255,255,255,0.05)' } },
-                        x: { ticks: { color: textColor }, grid: { display: false } }
-                    }
-                }
-            });
-
-            if (myPieChart) myPieChart.destroy();
-            myPieChart = new Chart(ctxPie, {
-                type: 'doughnut',
-                data: commonData,
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { position: 'bottom', labels: { color: textColor, padding: 20 } } },
-                    cutout: '70%'
-                }
-            });
-        }
-
-        // --- 3. FETCH DATA FROM MONGO API ---
-        async function loadDataFromBackend() {
-            try {
-                console.log("Fetching doctor-specific data from backend...");
-
-                // Execute strict API calls to your specific DOCTOR endpoints
-                const [patientsRes, testsRes, medicinesRes] = await Promise.all([
-                    axios.get(`/api/patients/doctor/${doctorId}`),
-                    axios.get(`/api/medical-tests/doctor/${doctorId}`),
-                    axios.get(`/api/medicines/doctor/${doctorId}`)
-                ]);
-
-                // Extract real counts from the array length of your DB response
-                const counts = {
-                    p: patientsRes.data ? patientsRes.data.length : 0,
-                    t: testsRes.data ? testsRes.data.length : 0,
-                    m: medicinesRes.data ? medicinesRes.data.length : 0
-                };
-
-                console.log("Backend Data Received:", counts);
-
-                // Update Dashboard Numbers
-                $('#totalPatients').text(counts.p);
-                $('#totalTests').text(counts.t);
-                $('#totalMedicines').text(counts.m);
-
-                // Render Charts with REAL data
-                initCharts(counts);
-
-            } catch (error) {
-                console.error("CRITICAL: Failed to load data from backend.", error);
-                alert("Error: Could not fetch data from the database. Please check the browser console.");
-            }
         }
 
         function logout() {
@@ -433,6 +352,88 @@
             window.location.href = "/";
         }
 
+        // --- 3. PATIENT DATA FETCHING ---
+        function loadPatients() {
+            const tbody = document.getElementById("patientTableBody");
+
+            fetch(`/api/patients/doctor/${doctorId}`)
+                .then(res => {
+                    if (!res.ok) throw new Error("Failed to fetch patients");
+                    return res.json();
+                })
+                .then(data => {
+                    allPatients = data || [];
+                    renderPatients(allPatients);
+                })
+                .catch(error => {
+                    console.error("Error loading patients:", error);
+                    tbody.innerHTML = `<tr><td colspan="5" class="text-center py-4 text-danger"><i class="fas fa-exclamation-triangle me-2"></i> Error loading patient data.</td></tr>`;
+                });
+        }
+
+        // --- 4. FILTER LOGIC ---
+        function applyFilters() {
+            const nameVal = document.getElementById("filterName").value.toLowerCase();
+            const phoneVal = document.getElementById("filterPhone").value.toLowerCase();
+            const emailVal = document.getElementById("filterEmail").value.toLowerCase();
+
+            const filtered = allPatients.filter(p => {
+                const matchName = (p.fullName || "").toLowerCase().includes(nameVal);
+                const matchPhone = (p.phone || "").toLowerCase().includes(phoneVal);
+                const matchEmail = (p.emailAddress || "").toLowerCase().includes(emailVal);
+                return matchName && matchPhone && matchEmail;
+            });
+
+            renderPatients(filtered);
+        }
+
+        // --- 5. RENDER LOGIC ---
+        function renderPatients(patients) {
+            const tbody = document.getElementById("patientTableBody");
+            let rows = "";
+
+            if (!patients || patients.length === 0) {
+                rows = `<tr><td colspan="5" class="text-center py-4 text-muted">No patients found.</td></tr>`;
+            } else {
+                patients.forEach(p => {
+                    rows += `
+                        <tr>
+                            <td class="fw-bold">#${p.patientId || "-"}</td>
+                            <td>
+                                <div class="d-flex align-items-center text-white-custom fw-bold">
+                                    <div class="bg-primary bg-opacity-10 rounded-circle p-2 me-3 d-flex justify-content-center align-items-center" style="width:35px; height:35px">
+                                        <i class="fas fa-user text-primary"></i>
+                                    </div>
+                                    ${p.fullName || "-"}
+                                </div>
+                            </td>
+                            <td><i class="fas fa-phone fa-sm text-secondary me-2"></i>${p.phone || "-"}</td>
+                            <td><i class="fas fa-envelope fa-sm text-secondary me-2"></i>${p.emailAddress || "-"}</td>
+                            <td class="text-end">
+                                <button class="btn btn-outline-success btn-sm me-2 shadow-sm" onclick="addPrescription('${p.patientId}')">
+                                    <i class="fas fa-plus me-1"></i> Add Rx
+                                </button>
+                                <button class="btn btn-primary-custom btn-sm shadow-sm" onclick="goToHistory('${p.patientId}')">
+                                    <i class="fas fa-history me-1"></i> View History
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            }
+            tbody.innerHTML = rows;
+        }
+
+        // --- 6. ACTION ROUTING ---
+        function goToHistory(patientId) {
+            if (!patientId) return;
+            window.location.href = `/doctor/prescriptions/${patientId}`;
+        }
+
+        function addPrescription(patientId) {
+            if (!patientId) return;
+            window.location.href = `/doctor/prescription?patientId=${patientId}`;
+        }
     </script>
 </body>
 

@@ -270,16 +270,16 @@
                 <ul class="nav flex-column">
                     <li class="nav-item"><a class="nav-link" href="/doctor/dashboard"><i
                                 class="fas fa-chart-line me-2"></i> Overview</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/doctor/appointments"><i
-                                class="fas fa-calendar-check me-2"></i> Appointments</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/doctor/clinics"><i class="fas fa-hospital me-2"></i>
+                            Clinics</a></li>
                     <li class="nav-item"><a class="nav-link" href="/doctor/patients"><i
                                 class="fas fa-user-injured me-2"></i> My Patients</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/doctor/clinics"><i class="fas fa-hospital me-2"></i>
-                            My Clinics</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/doctor/tests"><i class="fas fa-vials me-2"></i> Lab
-                            Reports</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/doctor/prescriptions"><i
+                    <li class="nav-item"><a class="nav-link" href="/doctor/tests"><i class="fas fa-vials me-2"></i>
+                            Medical Tests</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/doctor/view-prescription"><i
                                 class="fas fa-file-prescription me-2"></i> Prescriptions</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/doctor/medicine"><i class="fas fa-pills me-2"></i>
+                            Inventory</a></li>
                 </ul>
             </nav>
 
@@ -613,48 +613,48 @@
 
         async function resetPassword() {
 
-    const newPassword = document.getElementById("newPassword").value.trim();
-    const confirmPassword = document.getElementById("confirmPassword").value.trim();
+            const newPassword = document.getElementById("newPassword").value.trim();
+            const confirmPassword = document.getElementById("confirmPassword").value.trim();
 
-    if (!newPassword || !confirmPassword) {
-        alert("Both password fields are required.");
-        return;
-    }
+            if (!newPassword || !confirmPassword) {
+                alert("Both password fields are required.");
+                return;
+            }
 
-    if (newPassword.length < 6) {
-        alert("Password must be at least 6 characters.");
-        return;
-    }
+            if (newPassword.length < 6) {
+                alert("Password must be at least 6 characters.");
+                return;
+            }
 
-    if (newPassword !== confirmPassword) {
-        alert("Passwords do not match.");
-        return;
-    }
+            if (newPassword !== confirmPassword) {
+                alert("Passwords do not match.");
+                return;
+            }
 
-    try {
+            try {
 
-        await axios.post("/api/doctors/reset-password", {
-            email: originalData.email,
-            phone: originalData.phone,
-            newPassword: newPassword
-        });
+                await axios.post("/api/doctors/reset-password", {
+                    email: originalData.email,
+                    phone: originalData.phone,
+                    newPassword: newPassword
+                });
 
-        alert("Password updated successfully.");
+                alert("Password updated successfully.");
 
-        document.getElementById("newPassword").value = "";
-        document.getElementById("confirmPassword").value = "";
+                document.getElementById("newPassword").value = "";
+                document.getElementById("confirmPassword").value = "";
 
-    } catch (error) {
+            } catch (error) {
 
-        console.error("Reset error:", error);
+                console.error("Reset error:", error);
 
-        if (error.response && error.response.status === 404) {
-            alert("Invalid email or phone.");
-        } else {
-            alert("Something went wrong while updating password.");
+                if (error.response && error.response.status === 404) {
+                    alert("Invalid email or phone.");
+                } else {
+                    alert("Something went wrong while updating password.");
+                }
+            }
         }
-    }
-}
 
 
         function showPasswordInfo() {
