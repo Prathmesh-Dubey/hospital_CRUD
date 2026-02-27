@@ -54,7 +54,8 @@
             top: 0;
             left: 0;
             right: 0;
-            height: var(--navbar-height);
+            height: auto;
+            min-height: var(--navbar-height);
             z-index: 1030;
         }
 
@@ -76,17 +77,28 @@
             width: 83.333333%;
         }
 
-        @media (max-width: 767.98px) {
+        /* Responsive Breakpoints */
+        @media (max-width: 991.98px) {
             .sidebar {
                 position: static;
                 width: 100%;
                 height: auto;
                 border-right: none;
+                border-bottom: 1px solid var(--border-color);
+                padding-bottom: 1rem;
             }
 
             main {
                 margin-left: 0;
                 width: 100%;
+            }
+
+            .navbar-collapse {
+                background: var(--navbar-bg);
+                padding: 1rem;
+                border-radius: 8px;
+                margin-top: 10px;
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
             }
         }
 
@@ -121,7 +133,8 @@
 
         .search-wrapper {
             position: relative;
-            width: 400px;
+            width: 100%;
+            max-width: 400px;
         }
 
         .search-wrapper input {
@@ -167,28 +180,35 @@
                 <span>HMS<span class="text-accent">PATIENT</span></span>
             </a>
 
+            <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false"
+                aria-label="Toggle navigation">
+                <i class="fas fa-bars text-accent fs-4"></i>
+            </button>
+
             <div class="collapse navbar-collapse" id="navbarNav">
-                <div class="mx-auto search-wrapper">
+                <div class="mx-auto search-wrapper my-3 my-lg-0">
                     <i class="fas fa-search"></i>
                     <input class="form-control" type="text" placeholder="Search doctors, clinics...">
                 </div>
 
-                <ul class="navbar-nav ms-auto align-items-center">
-                    <li class="nav-item me-4">
-                        <div class="theme-toggle" id="themeSwitcher">
+                <ul class="navbar-nav ms-auto align-items-lg-center">
+                    <li class="nav-item me-lg-4 mb-3 mb-lg-0 d-flex justify-content-center justify-content-lg-start">
+                        <div class="theme-toggle fs-5" id="themeSwitcher">
                             <i class="fas fa-moon" id="themeIcon"></i>
                         </div>
                     </li>
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" data-bs-toggle="dropdown"
-                            style="color: var(--text-main)">
+                        <a class="nav-link dropdown-toggle d-flex align-items-center justify-content-center justify-content-lg-start"
+                            href="#" data-bs-toggle="dropdown" style="color: var(--text-main); margin: 0; padding: 0;">
 
                             <img id="patientAvatar" class="rounded-circle me-2" width="32">
 
                             <span id="patientName">Patient</span>
                         </a>
 
-                        <ul class="dropdown-menu dropdown-menu-end shadow border-0" style="background: var(--card-bg);">
+                        <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-3 mt-lg-2 text-center text-lg-start"
+                            style="background: var(--card-bg);">
                             <li><a class="dropdown-item text-secondary" href="/patient/profile">My Profile</a></li>
                             <li>
                                 <hr class="dropdown-divider bg-secondary">
@@ -231,13 +251,13 @@
 
             <main class="col-md-10 py-4">
 
-                <div class="d-flex justify-content-between align-items-end mb-4">
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-end mb-4 gap-3">
                     <div>
                         <h2 class="fw-bold mb-0 text-white-custom">Patient Portal</h2>
                         <p class="text-secondary mb-0">Explore available medical services.</p>
                     </div>
-                    <div class="text-end">
-                        <div class="p-2 px-3 rounded-3 stat-card">
+                    <div class="text-md-end">
+                        <div class="p-2 px-3 rounded-3 stat-card d-inline-block">
                             <i class="far fa-calendar-check text-accent me-2"></i>
                             <span class="text-white-custom"
                                 th:text="${#dates.format(#dates.createNow(), 'MMM dd, yyyy')}">Date</span>
@@ -288,7 +308,7 @@
                 </div>
 
                 <div class="row">
-                    <div class="col-md-8 mb-4">
+                    <div class="col-lg-8 mb-4">
                         <div class="card stat-card p-4 h-100">
                             <h5 class="fw-bold mb-4 text-white-custom">Service Availability</h5>
                             <div style="height: 300px; width: 100%;">
@@ -296,7 +316,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-4 mb-4">
+                    <div class="col-lg-4 mb-4">
                         <div class="card stat-card p-4 h-100">
                             <h5 class="fw-bold mb-4 text-white-custom">Quick Ratio</h5>
                             <div style="height: 300px; width: 100%;">
@@ -399,9 +419,9 @@
             try {
                 // Fetching public directories
                 const [doctorsRes, clinicsRes, testsRes] = await Promise.all([
-                    axios.get('/api/doctors'),
-                    axios.get('/api/clinics'),
-                    axios.get('/api/medical-tests')
+                    axios.get('/api/doctors').catch(() => ({ data: [] })),
+                    axios.get('/api/clinics').catch(() => ({ data: [] })),
+                    axios.get('/api/medical-tests').catch(() => ({ data: [] }))
                 ]);
 
                 const counts = {
@@ -420,11 +440,11 @@
 
             } catch (error) {
                 console.error("Failed to load patient data:", error);
-                alert("Could not load dashboard data. Check database connection.");
+                // Non-blocking catch to prevent the entire UI from failing if one endpoint drops
             }
         }
-        async function loadLoggedInPatient() {
 
+        async function loadLoggedInPatient() {
             const userId = localStorage.getItem("userId");
             const role = localStorage.getItem("userRole");
             const storedName = localStorage.getItem("userName");
@@ -436,6 +456,10 @@
 
             // Instant UI update (feels fast)
             document.getElementById("patientName").innerText = storedName;
+
+            // Populating the new ID section directly from localStorage
+           
+
             document.getElementById("patientAvatar").src =
                 `https://ui-avatars.com/api/?name=${storedName}&background=2dd4bf&color=0f172a`;
 
@@ -445,6 +469,10 @@
 
                 // Update with fresh DB value (if changed)
                 document.getElementById("patientName").innerText = patient.fullName;
+
+                // If your backend returns a specially formatted ID (e.g. "PT-1004"), you can overwrite it here:
+                // document.getElementById("patientIdDisplay").innerText = `ID: ${patient.patientId}`;
+
                 document.getElementById("patientAvatar").src =
                     `https://ui-avatars.com/api/?name=${patient.fullName}&background=2dd4bf&color=0f172a`;
 

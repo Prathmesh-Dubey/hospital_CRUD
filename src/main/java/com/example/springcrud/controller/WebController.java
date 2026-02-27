@@ -109,4 +109,14 @@ public class WebController {
         return "forgot-password";
     }
 
+    @GetMapping("/register")
+    public String registerPage() {
+        return "createAccount";
+    }
+    @GetMapping("/admin/contactSupport")
+    public String contactSupportPage(Model model) {
+        model.addAttribute("pageTitle", "Contact Support");
+        model.addAttribute("activeTab", "contactSupport");
+        return "admin/contactSupport";
+    }
 }

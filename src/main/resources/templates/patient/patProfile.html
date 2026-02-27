@@ -52,199 +52,333 @@
                 <small id="profilePatientId" class="text-muted"></small>
             </div>
 
+            <div class="text-center mb-3">
+                <button id="editBtn" class="btn btn-outline-info" onclick="enableEdit()">
+                    <i class="fas fa-edit"></i> Edit Profile
+                </button>
+
+                <button id="saveBtn" class="btn btn-success d-none" onclick="saveProfile()">
+                    <i class="fas fa-save"></i> Save Changes
+                </button>
+
+                <button id="cancelBtn" class="btn btn-secondary d-none" onclick="cancelEdit()">
+                    Cancel
+                </button>
+            </div>
+
+            <!-- Personal Information -->
             <!-- Personal Information -->
             <div class="mb-4">
                 <div class="section-title">Personal Information</div>
 
                 <div class="row">
+
                     <div class="col-md-6 mb-3">
-                        <div class="label">Date of Birth</div>
-                        <div class="value" id="dob"></div>
+                        <label class="label">Full Name</label>
+                        <input type="text" id="fullName" class="form-control bg-dark text-white" disabled>
                     </div>
+
                     <div class="col-md-6 mb-3">
-                        <div class="label">Gender</div>
-                        <div class="value" id="gender"></div>
+                        <label class="label">Date of Birth</label>
+                        <input type="date" id="dob" class="form-control bg-dark text-white" disabled>
                     </div>
+
                     <div class="col-md-6 mb-3">
-                        <div class="label">Blood Group</div>
-                        <div class="value" id="bloodGroup"></div>
+                        <label class="label">Gender</label>
+                        <select id="gender" class="form-control bg-dark text-white" disabled>
+                            <option value="">Select Gender</option>
+                            <option>Male</option>
+                            <option>Female</option>
+                            <option>Other</option>
+                        </select>
                     </div>
+
                     <div class="col-md-6 mb-3">
-                        <div class="label">Height / Weight</div>
-                        <div class="value" id="hw"></div>
+                        <label class="label">Blood Group</label>
+                        <select id="bloodGroup" class="form-control bg-dark text-white" disabled>
+                            <option value="">Select Blood Group</option>
+                            <option>A+</option>
+                            <option>A-</option>
+                            <option>B+</option>
+                            <option>B-</option>
+                            <option>O+</option>
+                            <option>O-</option>
+                            <option>AB+</option>
+                            <option>AB-</option>
+                        </select>
                     </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="label">Height (cm)</label>
+                        <input type="number" id="height" class="form-control bg-dark text-white" disabled>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="label">Weight (kg)</label>
+                        <input type="number" id="weight" class="form-control bg-dark text-white" disabled>
+                    </div>
+
+                    <div class="col-md-12 mb-3">
+                        <label class="label">Allergies</label>
+                        <input type="text" id="allergies" class="form-control bg-dark text-white" disabled>
+                    </div>
+
+                    <div class="col-md-12 mb-3">
+                        <label class="label">Chronic Diseases</label>
+                        <input type="text" id="chronicDiseases" class="form-control bg-dark text-white" disabled>
+                    </div>
+
+                    <div class="col-md-12 mb-3">
+                        <label class="label">Current Medications</label>
+                        <input type="text" id="currentMedications" class="form-control bg-dark text-white" disabled>
+                    </div>
+
                 </div>
             </div>
+
 
             <!-- Contact Information -->
             <div>
                 <div class="section-title">Contact Information</div>
 
                 <div class="row">
+
                     <div class="col-md-6 mb-3">
-                        <div class="label">Phone</div>
-                        <div class="value" id="phone"></div>
+                        <label class="label">Phone</label>
+                        <input type="text" id="phone" class="form-control bg-dark text-white" disabled>
                     </div>
+
                     <div class="col-md-6 mb-3">
-                        <div class="label">Email</div>
-                        <div class="value" id="email"></div>
+                        <label class="label">Email</label>
+                        <input type="email" id="emailAddress" class="form-control bg-dark text-white" disabled>
                     </div>
+
                     <div class="col-md-12 mb-3">
-                        <div class="label">Address</div>
-                        <div class="value" id="address"></div>
+                        <label class="label">Address</label>
+                        <input type="text" id="residentialAddress" class="form-control bg-dark text-white" disabled>
                     </div>
+
                     <div class="col-md-12 mb-3">
-                        <div class="label">Emergency Contact</div>
-                        <div class="value" id="emergency"></div>
+                        <label class="label">Emergency Contact</label>
+                        <input type="text" id="emergencyContact" class="form-control bg-dark text-white" disabled>
                     </div>
+
                 </div>
             </div>
+            <hr class="my-4">
 
-        </div>
-        <hr class="my-4">
+            <div>
+                <div class="section-title">Change Password</div>
 
-        <div>
-            <div class="section-title">Change Password</div>
+                <div class="row">
 
-            <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="label">Confirm Phone</label>
+                        <input type="text" id="confirmPhone" class="form-control bg-dark text-white">
+                    </div>
 
-                <div class="col-md-6 mb-3">
-                    <label class="label">Confirm Phone</label>
-                    <input type="text" id="confirmPhone" class="form-control bg-dark text-white">
-                </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="label">Confirm Email</label>
+                        <input type="email" id="confirmEmail" class="form-control bg-dark text-white">
+                    </div>
 
-                <div class="col-md-6 mb-3">
-                    <label class="label">Confirm Email</label>
-                    <input type="email" id="confirmEmail" class="form-control bg-dark text-white">
-                </div>
+                    <div class="col-md-12 mb-3">
+                        <label class="label">New Password</label>
+                        <div class="input-group">
+                            <input type="password" id="newPassword" class="form-control bg-dark text-white">
+                            <button class="btn btn-outline-light" type="button" onclick="togglePassword()">
+                                <i id="eyeIcon" class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
 
-                <div class="col-md-12 mb-3">
-                    <label class="label">New Password</label>
-                    <div class="input-group">
-                        <input type="password" id="newPassword" class="form-control bg-dark text-white">
-                        <button class="btn btn-outline-light" type="button" onclick="togglePassword()">
-                            <i id="eyeIcon" class="fas fa-eye"></i>
+                    <div class="col-md-12">
+                        <button class="btn btn-primary w-100" onclick="changePassword()">
+                            Update Password
                         </button>
                     </div>
+
+                    <div class="col-md-12 mt-2 text-center" id="passwordMessage"></div>
+
                 </div>
-
-                <div class="col-md-12">
-                    <button class="btn btn-primary w-100" onclick="changePassword()">
-                        Update Password
-                    </button>
-                </div>
-
-                <div class="col-md-12 mt-2 text-center" id="passwordMessage"></div>
-
             </div>
         </div>
-    </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
-    <script>
-        async function loadProfile() {
+        <script>
+            async function loadProfile() {
 
-            const userId = localStorage.getItem("userId");
-            const role = localStorage.getItem("userRole");
+                const userId = localStorage.getItem("userId");
+                const role = localStorage.getItem("userRole");
 
-            if (!userId || role !== "PATIENT") {
-                window.location.href = "/";
-                return;
+                if (!userId || role !== "PATIENT") {
+                    window.location.href = "/";
+                    return;
+                }
+
+                try {
+                    const response = await axios.get(`/api/patients/${userId}`);
+                    const p = response.data;
+
+                    // Header
+                    document.getElementById("profileName").innerText = p.fullName || "";
+                    document.getElementById("profilePatientId").innerText = p.patientId || "";
+
+                    document.getElementById("profileAvatar").src =
+                        `https://ui-avatars.com/api/?name=${encodeURIComponent(p.fullName || "User")}&background=2dd4bf&color=0f172a&size=128`;
+
+                    // Personal Info
+                    document.getElementById("fullName").value = p.fullName || "";
+                    document.getElementById("dob").value = p.dateOfBirth || "";
+                    document.getElementById("gender").value = p.gender || "";
+                    document.getElementById("bloodGroup").value = p.bloodGroup || "";
+                    document.getElementById("height").value = p.height || "";
+                    document.getElementById("weight").value = p.weight || "";
+                    document.getElementById("allergies").value = p.allergies || "";
+                    document.getElementById("chronicDiseases").value = p.chronicDiseases || "";
+                    document.getElementById("currentMedications").value = p.currentMedications || "";
+
+                    // Contact Info
+                    document.getElementById("phone").value = p.phone || "";
+                    document.getElementById("emailAddress").value = p.emailAddress || "";
+                    document.getElementById("residentialAddress").value = p.residentialAddress || "";
+                    document.getElementById("emergencyContact").value = p.emergencyContact || "";
+
+                    // Keep fields disabled by default
+                    document.querySelectorAll(".form-control").forEach(input => {
+                        input.setAttribute("disabled", true);
+                    });
+
+                } catch (error) {
+                    console.error("Profile load failed:", error);
+                }
+            }
+            function togglePassword() {
+                const input = document.getElementById("newPassword");
+                const icon = document.getElementById("eyeIcon");
+
+                if (input.type === "password") {
+                    input.type = "text";
+                    icon.classList.remove("fa-eye");
+                    icon.classList.add("fa-eye-slash");
+                } else {
+                    input.type = "password";
+                    icon.classList.remove("fa-eye-slash");
+                    icon.classList.add("fa-eye");
+                }
+            }
+            async function changePassword() {
+
+                const userId = localStorage.getItem("userId");
+                const phone = document.getElementById("confirmPhone").value.trim();
+                const email = document.getElementById("confirmEmail").value.trim();
+                const newPassword = document.getElementById("newPassword").value.trim();
+                const msg = document.getElementById("passwordMessage");
+
+                msg.innerHTML = "";
+
+                // Session check
+                if (!userId) {
+                    msg.innerHTML = "<span class='text-danger'>Session expired. Please login again.</span>";
+                    return;
+                }
+
+                // Field validation
+                if (!phone || !email || !newPassword) {
+                    msg.innerHTML = "<span class='text-danger'>All fields are required</span>";
+                    return;
+                }
+
+                if (newPassword.length < 6) {
+                    msg.innerHTML = "<span class='text-danger'>Password must be at least 6 characters</span>";
+                    return;
+                }
+
+                try {
+
+                    await axios.put("/api/patients/change-password", {
+                        userId: userId,
+                        phone: phone,
+                        email: email,
+                        newPassword: newPassword
+                    });
+
+                    msg.innerHTML = "<span class='text-success'>Password updated successfully</span>";
+
+                    document.getElementById("newPassword").value = "";
+
+                } catch (error) {
+
+                    msg.innerHTML =
+                        "<span class='text-danger'>" +
+                        (error.response?.data || "Password update failed") +
+                        "</span>";
+                }
+            }
+            function enableEdit() {
+
+                // Enable only profile fields (not password section)
+                document.querySelectorAll("#fullName, #dob, #gender, #bloodGroup, #height, #weight, #allergies, #chronicDiseases, #currentMedications, #phone, #emailAddress, #residentialAddress, #emergencyContact")
+                    .forEach(input => input.removeAttribute("disabled"));
+
+                document.getElementById("editBtn").classList.add("d-none");
+                document.getElementById("saveBtn").classList.remove("d-none");
+                document.getElementById("cancelBtn").classList.remove("d-none");
+            }
+            function cancelEdit() {
+
+                document.querySelectorAll("#fullName, #dob, #gender, #bloodGroup, #height, #weight, #allergies, #chronicDiseases, #currentMedications, #phone, #emailAddress, #residentialAddress, #emergencyContact")
+                    .forEach(input => input.setAttribute("disabled", true));
+
+                document.getElementById("editBtn").classList.remove("d-none");
+                document.getElementById("saveBtn").classList.add("d-none");
+                document.getElementById("cancelBtn").classList.add("d-none");
+
+                loadProfile(); // reload original data
+            }
+            async function saveProfile() {
+
+                const userId = localStorage.getItem("userId");
+
+                if (!userId) {
+                    alert("Session expired. Please login again.");
+                    return;
+                }
+
+                const updatedData = {
+                    fullName: document.getElementById("fullName").value.trim(),
+                    dateOfBirth: document.getElementById("dob").value,
+                    gender: document.getElementById("gender").value,
+                    bloodGroup: document.getElementById("bloodGroup").value,
+                    height: document.getElementById("height").value,
+                    weight: document.getElementById("weight").value,
+                    allergies: document.getElementById("allergies").value.trim(),
+                    chronicDiseases: document.getElementById("chronicDiseases").value.trim(),
+                    currentMedications: document.getElementById("currentMedications").value.trim(),
+                    phone: document.getElementById("phone").value.trim(),
+                    emailAddress: document.getElementById("emailAddress").value.trim(),
+                    residentialAddress: document.getElementById("residentialAddress").value.trim(),
+                    emergencyContact: document.getElementById("emergencyContact").value.trim()
+                };
+
+                try {
+
+                    await axios.put(`/api/patients/${userId}`, updatedData);
+
+                    alert("Profile updated successfully");
+
+                    cancelEdit();  // lock fields again
+                    loadProfile(); // refresh header name & avatar
+
+                } catch (error) {
+                    console.error("Update failed:", error);
+                    alert("Profile update failed");
+                }
             }
 
-            try {
-                const response = await axios.get(`/api/patients/${userId}`);
-                const p = response.data;
-
-                document.getElementById("profileName").innerText = p.fullName;
-                document.getElementById("profilePatientId").innerText = p.patientId;
-
-                document.getElementById("profileAvatar").src =
-                    `https://ui-avatars.com/api/?name=${p.fullName}&background=2dd4bf&color=0f172a&size=128`;
-
-                document.getElementById("dob").innerText = p.dateOfBirth || "N/A";
-                document.getElementById("gender").innerText = p.gender || "N/A";
-                document.getElementById("bloodGroup").innerText = p.bloodGroup || "N/A";
-
-                document.getElementById("hw").innerText =
-                    (p.height ? p.height + " cm" : "") +
-                    (p.weight ? " / " + p.weight + " kg" : "") || "N/A";
-
-                document.getElementById("phone").innerText = p.phone || "N/A";
-                document.getElementById("email").innerText = p.emailAddress || "N/A";
-                document.getElementById("address").innerText = p.residentialAddress || "N/A";
-                document.getElementById("emergency").innerText = p.emergencyContact || "N/A";
-
-            } catch (error) {
-                console.error("Profile load failed:", error);
-            }
-        }
-        function togglePassword() {
-            const input = document.getElementById("newPassword");
-            const icon = document.getElementById("eyeIcon");
-
-            if (input.type === "password") {
-                input.type = "text";
-                icon.classList.remove("fa-eye");
-                icon.classList.add("fa-eye-slash");
-            } else {
-                input.type = "password";
-                icon.classList.remove("fa-eye-slash");
-                icon.classList.add("fa-eye");
-            }
-        }
-        async function changePassword() {
-
-            const userId = localStorage.getItem("userId");
-            const phone = document.getElementById("confirmPhone").value.trim();
-            const email = document.getElementById("confirmEmail").value.trim();
-            const newPassword = document.getElementById("newPassword").value.trim();
-            const msg = document.getElementById("passwordMessage");
-
-            msg.innerHTML = "";
-
-            // Session check
-            if (!userId) {
-                msg.innerHTML = "<span class='text-danger'>Session expired. Please login again.</span>";
-                return;
-            }
-
-            // Field validation
-            if (!phone || !email || !newPassword) {
-                msg.innerHTML = "<span class='text-danger'>All fields are required</span>";
-                return;
-            }
-
-            if (newPassword.length < 6) {
-                msg.innerHTML = "<span class='text-danger'>Password must be at least 6 characters</span>";
-                return;
-            }
-
-            try {
-
-                await axios.put("/api/patients/change-password", {
-                    userId: userId,
-                    phone: phone,
-                    email: email,
-                    newPassword: newPassword
-                });
-
-                msg.innerHTML = "<span class='text-success'>Password updated successfully</span>";
-
-                document.getElementById("newPassword").value = "";
-
-            } catch (error) {
-
-                msg.innerHTML =
-                    "<span class='text-danger'>" +
-                    (error.response?.data || "Password update failed") +
-                    "</span>";
-            }
-        }
-
-        loadProfile();
-    </script>
+            loadProfile();
+        </script>
 
 </body>
 
