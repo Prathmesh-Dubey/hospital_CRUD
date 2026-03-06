@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -48,34 +49,95 @@
             background-color: var(--navbar-bg) !important;
             backdrop-filter: blur(10px);
             border-bottom: 1px solid var(--border-color);
-            position: fixed; top: 0; left: 0; right: 0; height: var(--navbar-height); z-index: 1030;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: var(--navbar-height);
+            z-index: 1030;
         }
 
         .sidebar {
             background-color: var(--sidebar-bg);
             border-right: 1px solid var(--border-color);
-            position: fixed; top: var(--navbar-height); bottom: 0; left: 0; width: 16.666667%;
-            overflow-y: auto; padding-top: 1.5rem; z-index: 100;
+            position: fixed;
+            top: var(--navbar-height);
+            bottom: 0;
+            left: 0;
+            width: 16.666667%;
+            overflow-y: auto;
+            padding-top: 1.5rem;
+            z-index: 100;
         }
 
-        main { margin-left: 16.666667%; width: 83.333333%; }
+        main {
+            margin-left: 16.666667%;
+            width: 83.333333%;
+        }
 
         @media (max-width: 767.98px) {
-            .sidebar { position: static; width: 100%; height: auto; border-right: none; }
-            main { margin-left: 0; width: 100%; }
+            .sidebar {
+                position: static;
+                width: 100%;
+                height: auto;
+                border-right: none;
+            }
+
+            main {
+                margin-left: 0;
+                width: 100%;
+            }
         }
 
         /* --- COMPONENTS --- */
-        .nav-link { color: var(--text-muted); font-weight: 500; padding: 12px 20px; margin: 8px 15px; border-radius: 10px; transition: 0.2s; }
-        .nav-link:hover { background: rgba(16, 185, 129, 0.1); color: var(--accent-primary); }
-        .nav-link.active { background: var(--accent-primary); color: #fff; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); }
+        .nav-link {
+            color: var(--text-muted);
+            font-weight: 500;
+            padding: 12px 20px;
+            margin: 8px 15px;
+            border-radius: 10px;
+            transition: 0.2s;
+        }
 
-        .search-wrapper { position: relative; width: 400px; }
-        .search-wrapper input { background: var(--input-bg) !important; border: 1px solid var(--border-color); border-radius: 12px; color: var(--text-main) !important; padding-left: 45px; }
-        .search-wrapper .fa-search { position: absolute; left: 18px; top: 12px; color: var(--accent-primary); }
-        
-        .text-white-custom { color: var(--text-main) !important; }
-        .theme-toggle { cursor: pointer; color: var(--accent-primary); }
+        .nav-link:hover {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--accent-primary);
+        }
+
+        .nav-link.active {
+            background: var(--accent-primary);
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+
+        .search-wrapper {
+            position: relative;
+            width: 400px;
+        }
+
+        .search-wrapper input {
+            background: var(--input-bg) !important;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            color: var(--text-main) !important;
+            padding-left: 45px;
+        }
+
+        .search-wrapper .fa-search {
+            position: absolute;
+            left: 18px;
+            top: 12px;
+            color: var(--accent-primary);
+        }
+
+        .text-white-custom {
+            color: var(--text-main) !important;
+        }
+
+        .theme-toggle {
+            cursor: pointer;
+            color: var(--accent-primary);
+        }
 
         .stat-card {
             background: var(--card-bg);
@@ -90,18 +152,25 @@
             --bs-table-bg: transparent;
             --bs-table-color: var(--text-main);
             --bs-table-border-color: var(--border-color);
-            --bs-table-hover-bg: rgba(255,255,255,0.02);
+            --bs-table-hover-bg: rgba(255, 255, 255, 0.02);
             --bs-table-hover-color: var(--text-main);
         }
-        
+
         [data-bs-theme="light"] .table {
-            --bs-table-hover-bg: rgba(0,0,0,0.02);
+            --bs-table-hover-bg: rgba(0, 0, 0, 0.02);
         }
 
-        .badge-success { background-color: #10b981; }
-        .badge-warning { background-color: #f59e0b; }
-        .badge-secondary { background-color: #64748b; }
+        .badge-success {
+            background-color: #10b981;
+        }
 
+        .badge-warning {
+            background-color: #f59e0b;
+        }
+
+        .badge-secondary {
+            background-color: #64748b;
+        }
     </style>
 </head>
 
@@ -138,7 +207,9 @@
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end shadow border-0" style="background: var(--card-bg);">
                             <li><a class="dropdown-item text-secondary" href="/doctor/home">My Profile</a></li>
-                            <li><hr class="dropdown-divider bg-secondary"></li>
+                            <li>
+                                <hr class="dropdown-divider bg-secondary">
+                            </li>
                             <li><a class="dropdown-item text-danger" href="#" onclick="logout()">Logout</a></li>
                         </ul>
                     </li>
@@ -149,23 +220,31 @@
 
     <div class="container-fluid">
         <div class="row">
-            
+
             <nav class="col-md-2 sidebar px-0">
                 <ul class="nav flex-column">
-                    <li class="nav-item"><a class="nav-link" href="/doctor/dashboard"><i class="fas fa-chart-line me-2"></i> Overview</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/doctor/clinics"><i class="fas fa-hospital me-2"></i> Clinic</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/doctor/patients"><i class="fas fa-user-injured me-2"></i> My Patients</a></li>
-                    <li class="nav-item"><a class="nav-link active" href="/doctor/tests"><i class="fas fa-vials me-2"></i> Medical Tests</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/doctor/view-prescription"><i class="fas fa-file-prescription me-2"></i> Prescriptions</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/doctor/medicine"><i class="fas fa-pills me-2"></i> Inventory</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/doctor/dashboard"><i
+                                class="fas fa-chart-line me-2"></i> Overview</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/doctor/clinics"><i class="fas fa-hospital me-2"></i>
+                            Clinic</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/doctor/patients"><i
+                                class="fas fa-user-injured me-2"></i> My Patients</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="/doctor/tests"><i
+                                class="fas fa-vials me-2"></i> Medical Tests</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/doctor/view-prescription"><i
+                                class="fas fa-file-prescription me-2"></i> Prescriptions</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/doctor/medicine"><i class="fas fa-pills me-2"></i>
+                            Inventory</a></li>
                 </ul>
             </nav>
 
             <main class="col-md-10 py-4 px-4">
-                
-                <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3" style="border-color: var(--border-color) !important;">
+
+                <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3"
+                    style="border-color: var(--border-color) !important;">
                     <div>
-                        <h2 class="fw-bold mb-0 text-white-custom"><i class="fas fa-history text-success me-2"></i> Patient Test History</h2>
+                        <h2 class="fw-bold mb-0 text-white-custom"><i class="fas fa-history text-success me-2"></i>
+                            Patient Test History</h2>
                         <small class="text-secondary mt-1 d-block" id="patientInfo"></small>
                     </div>
                     <div class="d-flex gap-2 page-header-actions">
@@ -248,7 +327,7 @@
         async function loadTests() {
             try {
                 const response = await axios.get(
-                    `/api/medical-tests/doctor/${doctorId}/patients/${patientId}`
+                    `/api/medical-tests/patients/${patientId}`
                 );
 
                 const tests = response.data;
@@ -339,4 +418,5 @@
 
     </script>
 </body>
+
 </html>

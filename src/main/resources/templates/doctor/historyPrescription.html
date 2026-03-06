@@ -238,6 +238,41 @@
                     </div>
                 </div>
 
+                <div class="card stat-card p-3 mb-4">
+                    <div class="row g-2">
+
+                        <div class="col-md-4">
+                            <select id="statusFilter" class="form-control">
+                                <option value="">All Status</option>
+                                <option value="Active">Active</option>
+                                <option value="Completed">Completed</option>
+                                <option value="Pending">Pending</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-2">
+                            <input type="date" id="fromDateFilter" class="form-control" placeholder="From Date">
+                        </div>
+
+                        <div class="col-md-2">
+                            <input type="date" id="toDateFilter" class="form-control" placeholder="To Date">
+                        </div>
+
+                        <div class="col-md-2">
+                            <button class="btn btn-success w-100" onclick="applyFilters()">
+                                <i class="fas fa-filter me-1"></i> Filter
+                            </button>
+                        </div>
+
+                        <div class="col-md-2">
+                            <button class="btn btn-outline-secondary w-100" onclick="loadPrescriptionHistory()">
+                                Reset
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+
                 <div class="card stat-card p-4">
                     <div class="table-responsive">
                         <table class="table table-hover align-middle mb-0">
@@ -268,6 +303,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
+        let allPrescriptions = [];
         // --- 1. AUTHENTICATION & GLOBAL VARIABLES ---
         const role = localStorage.getItem("userRole");
         const doctorId = localStorage.getItem("userId");
@@ -327,6 +363,8 @@
                     return response.json();
                 })
                 .then(data => {
+
+                    allPrescriptions = data || [];
                     if (!data || data.length === 0) {
                         historyBody.innerHTML = `<tr><td colspan="5" class="text-center py-4 text-muted">No prescriptions found for this patient.</td></tr>`;
                         return;
@@ -334,58 +372,109 @@
 
                     // Sort newest first
                     data.sort((a, b) => {
-                        const dateA = new Date(a.audit?.createdAt || 0);
-                        const dateB = new Date(b.audit?.createdAt || 0);
+                        const dateA = new Date(a.createdDate || 0);
+                        const dateB = new Date(b.createdDate || 0);
                         return dateB - dateA;
                     });
 
-                    let rows = "";
-
-                    data.forEach((p, index) => {
-                        if (!p.prescriptionId) return;
-
-                        // Clean up date formatting
-                        const createdDate = p.audit?.createdAt
-                            ? new Date(p.audit.createdAt).toLocaleString(undefined, {
-                                year: 'numeric', month: 'short', day: 'numeric',
-                                hour: '2-digit', minute: '2-digit'
-                            })
-                            : "-";
-
-                        const status = p.treatmentTimeline?.treatmentStatus || "Pending";
-
-                        // Pick a badge color based on status (adapt keywords to your actual backend statuses)
-                        let badgeClass = "bg-secondary";
-                        if (status.toLowerCase().includes("completed") || status.toLowerCase().includes("active")) badgeClass = "bg-success";
-                        else if (status.toLowerCase().includes("pending")) badgeClass = "bg-warning text-dark";
-
-                        rows += `
-                            <tr>
-                                <td class="text-muted fw-bold">${index + 1}</td>
-                                <td class="fw-bold text-white-custom"><i class="fas fa-file-alt text-primary me-2 opacity-75"></i>${p.prescriptionId}</td>
-                                <td><i class="far fa-calendar-alt me-2 text-muted"></i>${createdDate}</td>
-                                <td><span class="badge ${badgeClass} bg-opacity-75 px-3 py-2 rounded-pill">${status}</span></td>
-                                <td class="text-end">
-    <button class="btn btn-outline-success btn-sm me-2"
-        onclick="viewDetails('${p.prescriptionId}')">
-        <i class="fas fa-eye me-1"></i> View
-    </button>
-
-    <button class="btn btn-outline-danger btn-sm"
-        onclick="deletePrescription('${p.prescriptionId}')">
-        <i class="fas fa-trash me-1"></i> Delete
-    </button>
-</td>
-                            </tr>
-                        `;
-                    });
-
-                    historyBody.innerHTML = rows;
+                    renderHistory(data);
                 })
                 .catch(error => {
                     console.error("Error loading history:", error);
                     historyBody.innerHTML = `<tr><td colspan="5" class="text-center py-4 text-danger"><i class="fas fa-times-circle me-2"></i> Failed to load prescription history.</td></tr>`;
                 });
+        }
+        function applyFilters() {
+
+            const statusValue = document.getElementById("statusFilter").value.toLowerCase();
+            const fromDate = document.getElementById("fromDateFilter").value;
+            const toDate = document.getElementById("toDateFilter").value;
+
+            let filtered = allPrescriptions.filter(p => {
+
+                const status = (p.treatmentTimeline?.treatmentStatus || "").toLowerCase();
+
+                const createdDate = p.createdDate
+                    ? new Date(p.createdDate)
+                    : null;
+
+                const statusMatch = !statusValue || status.includes(statusValue);
+
+                let dateMatch = true;
+
+                if (createdDate) {
+
+                    if (fromDate) {
+                        dateMatch = dateMatch && createdDate >= new Date(fromDate);
+                    }
+
+                    if (toDate) {
+                        const to = new Date(toDate);
+                        to.setHours(23, 59, 59, 999); // include full day
+                        dateMatch = dateMatch && createdDate <= to;
+                    }
+                }
+                return statusMatch && dateMatch;
+            });
+
+            renderHistory(filtered);
+        }
+        function renderHistory(data) {
+
+            const historyBody = document.getElementById("historyBody");
+
+            if (!data || data.length === 0) {
+                historyBody.innerHTML =
+                    `<tr><td colspan="5" class="text-center py-4 text-muted">No prescriptions found.</td></tr>`;
+                return;
+            }
+
+            let rows = "";
+
+            data.forEach((p, index) => {
+
+                const createdDate = p.createdDate
+                    ? new Date(p.createdDate).toLocaleString(undefined, {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    })
+                    : "-";
+
+                const status = p.treatmentTimeline?.treatmentStatus || "Pending";
+
+                let badgeClass = "bg-secondary";
+                if (status.toLowerCase().includes("completed") || status.toLowerCase().includes("active"))
+                    badgeClass = "bg-success";
+                else if (status.toLowerCase().includes("pending"))
+                    badgeClass = "bg-warning text-dark";
+
+                rows += `
+        <tr>
+            <td class="text-muted fw-bold">${index + 1}</td>
+            <td class="fw-bold text-white-custom">
+                <i class="fas fa-file-alt text-primary me-2 opacity-75"></i>
+                ${p.prescriptionId}
+            </td>
+            <td><i class="far fa-calendar-alt me-2 text-muted"></i>${createdDate}</td>
+            <td><span class="badge ${badgeClass} bg-opacity-75 px-3 py-2 rounded-pill">${status}</span></td>
+            <td class="text-end">
+                <button class="btn btn-outline-success btn-sm me-2"
+                    onclick="viewDetails('${p.prescriptionId}')">
+                    <i class="fas fa-eye me-1"></i> View
+                </button>
+
+                <button class="btn btn-outline-danger btn-sm"
+                    onclick="deletePrescription('${p.prescriptionId}')">
+                    <i class="fas fa-trash me-1"></i> Delete
+                </button>
+            </td>
+        </tr>`;
+            });
+
+            historyBody.innerHTML = rows;
         }
 
         // --- 4. NAVIGATION ---

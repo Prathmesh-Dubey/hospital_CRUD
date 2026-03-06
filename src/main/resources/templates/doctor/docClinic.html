@@ -8,7 +8,6 @@
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.0/css/dataTables.bootstrap5.min.css">
 
     <style>
         /* --- PRO DOCTOR THEME ENGINE --- */
@@ -23,7 +22,6 @@
             /* Doctor Green */
             --border-color: rgba(255, 255, 255, 0.05);
             --input-bg: rgba(15, 23, 42, 0.6);
-            --table-hover: rgba(16, 185, 129, 0.1);
             --navbar-height: 70px;
         }
 
@@ -36,7 +34,6 @@
             --navbar-bg: rgba(255, 255, 255, 0.95);
             --border-color: rgba(0, 0, 0, 0.1);
             --input-bg: #f1f5f9;
-            --table-hover: rgba(0, 0, 0, 0.05);
         }
 
         body {
@@ -120,6 +117,17 @@
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
 
+        /* Clinic Card Hover Effects */
+        .clinic-card {
+            transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .clinic-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--accent-primary);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
         .form-control,
         .form-select {
             background-color: var(--input-bg);
@@ -135,27 +143,6 @@
             color: var(--text-main);
             border-color: var(--accent-primary);
             box-shadow: 0 0 0 0.25rem rgba(16, 185, 129, 0.25);
-        }
-
-        .table {
-            color: var(--text-main);
-            --bs-table-bg: transparent;
-        }
-
-        .table thead th {
-            background-color: var(--sidebar-bg);
-            color: var(--text-muted);
-            border-bottom: 2px solid var(--border-color);
-        }
-
-        .table td {
-            border-bottom: 1px solid var(--border-color);
-            vertical-align: middle;
-        }
-
-        .table-hover tbody tr:hover {
-            background-color: var(--table-hover);
-            color: var(--text-main);
         }
 
         .modal-content {
@@ -216,7 +203,6 @@
                 <span>HMS<span class="text-success">DOCTOR</span></span>
             </a>
 
-
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto align-items-center">
                     <li class="nav-item me-4">
@@ -229,15 +215,15 @@
                             style="color: var(--text-main)">
                             <img id="doctorAvatar" class="rounded-circle me-2" width="32">
                             <span id="doctorDisplayName"></span>
-
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end shadow border-0" style="background: var(--card-bg);">
                             <li><a class="dropdown-item text-secondary" href="/doctor/home">My Profile</a></li>
-                            <hr class="dropdown-divider bg-secondary">
+                            <li>
+                                <hr class="dropdown-divider bg-secondary">
+                            </li>
+                            <li><a class="dropdown-item text-danger" href="/" onclick="logout()">Logout</a></li>
+                        </ul>
                     </li>
-                    <li><a class="dropdown-item text-danger" href="/" onclick="logout()">Logout</a></li>
-                </ul>
-                </li>
                 </ul>
             </div>
         </div>
@@ -323,7 +309,8 @@
                                 </select>
                             </div>
                             <div class="col-md-4 d-flex align-items-end">
-                                <button type="button" class="btn btn-outline-secondary w-100" onclick="resetFilters()">
+                                <button type="button" class="btn btn-outline-secondary w-100 py-2 rounded-3"
+                                    onclick="resetFilters()">
                                     <i class="fas fa-undo me-2"></i> Reset Filters
                                 </button>
                             </div>
@@ -331,100 +318,19 @@
                     </div>
                 </div>
 
-                <div class="card stat-card border-0">
-                    <div class="card-header bg-transparent border-bottom border-secondary border-opacity-10 py-3">
-                        <h5 class="mb-0 text-white-custom"><i class="fas fa-list me-2"></i> Associated Locations</h5>
-                    </div>
-                    <div class="card-body p-0">
-                        <div class="table-responsive p-3">
-                            <table id="clinicsTable" class="table table-hover mb-0 w-100">
-                                <thead>
-                                    <tr>
-                                        <th>ID</th>
-                                        <th>Clinic Name</th>
-                                        <th>Type</th>
-                                        <th>City</th>
-                                        <th>Contact</th>
-                                        <th>Department</th>
-                                        <th>Service</th>
-                                        <th>Appointment Required</th>
-                                        <th>Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="clinicTableBody">
-                                    <tr class="text-center">
-                                        <td colspan="9" class="py-4 text-muted">Loading clinics...</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
+                <div class="mt-4">
+                    <h5 class="mb-3 text-white-custom"><i class="fas fa-list me-2"></i> Associated Locations</h5>
+                    <div id="clinicsCardContainer" class="row g-3">
+                        <div class="col-12 text-center text-muted py-4">Loading clinics...</div>
                     </div>
                 </div>
+
             </main>
-        </div>
-    </div>
-
-    <div class="modal fade" id="clinicModal" tabindex="-1">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header bg-transparent border-bottom border-secondary border-opacity-10">
-                    <h5 class="modal-title text-white-custom" id="clinicModalTitle">Edit Clinic Details</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="clinicForm">
-                        <input type="hidden" id="clinicId">
-
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label class="form-label">Clinic Name</label>
-                                <input type="text" class="form-control" id="clinicName" required>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label">Clinic Type</label>
-                                <input type="text" class="form-control" id="clinicType">
-                            </div>
-                        </div>
-
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label class="form-label">Status</label>
-                                <select class="form-select" id="status" required>
-                                    <option value="ACTIVE">Active</option>
-                                    <option value="CLOSED">Closed</option>
-                                    <option value="MAINTENANCE">Maintenance</option>
-                                </select>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label">City</label>
-                                <input type="text" class="form-control" id="city" required>
-                            </div>
-                        </div>
-
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label class="form-label">Phone</label>
-                                <input type="tel" class="form-control" id="phone">
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label">Email</label>
-                                <input type="email" class="form-control" id="email">
-                            </div>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer border-top border-secondary border-opacity-10">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" onclick="saveClinic()">Save Changes</button>
-                </div>
-            </div>
         </div>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.0/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.0/js/dataTables.bootstrap5.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
     <script>
@@ -452,15 +358,6 @@
         }
 
         // --- CLINIC MANAGEMENT LOGIC ---
-        let dataTable;
-        // Initialize DataTable
-        function initializeTable() {
-            if (dataTable) {
-                dataTable.destroy();
-            }
-            const rowCount = $('#clinicsTable tbody tr').length;
-            const hasData = rowCount > 0 && !$('#clinicsTable tbody tr').first().find('td[colspan]').length;
-        }
 
         // Load clinics
         async function loadClinics(filters = {}) {
@@ -471,70 +368,116 @@
                     clinics = response.data;
                 } catch (e) {
                     clinics = [
-                        { clinicId: 'C001', clinicName: 'City Hospital', clinicType: 'Hospital', status: 'ACTIVE', address: { city: 'New York' }, contact: { phone: '12345' } },
-                        { clinicId: 'C002', clinicName: 'Downtown OPD', clinicType: 'OPD', status: 'CLOSED', address: { city: 'Chicago' }, contact: { phone: '67890' } }
+                        { clinicId: 'C001', clinicName: 'City Hospital', clinicType: 'Hospital', status: 'ACTIVE', address: { city: 'New York' }, contact: { phone: '12345' }, departments: ['Cardiology', 'Neurology'], services: ['XRay', 'MRI'], appointmentRequired: true },
+                        { clinicId: 'C002', clinicName: 'Downtown OPD', clinicType: 'OPD', status: 'CLOSED', address: { city: 'Chicago' }, contact: { phone: '67890' }, departments: ['General'], services: ['Consultation'], appointmentRequired: false }
                     ];
                 }
 
-                if (filters.clinicName) {
-                    clinics = clinics.filter(c => c.clinicName?.toLowerCase().includes(filters.clinicName.toLowerCase()));
-                }
-                if (filters.status) {
-                    clinics = clinics.filter(c => c.status === filters.status);
-                }
-                if (filters.city) {
-                    clinics = clinics.filter(c => c.address?.city?.toLowerCase().includes(filters.city.toLowerCase()));
-                }
+                // APPLY ALL FILTERS
+                clinics = clinics.filter(c => {
+                    let match = true;
+                    if (filters.clinicName && !c.clinicName?.toLowerCase().includes(filters.clinicName.toLowerCase())) match = false;
+                    if (filters.status && c.status !== filters.status) match = false;
+                    if (filters.city && !c.address?.city?.toLowerCase().includes(filters.city.toLowerCase())) match = false;
+                    if (filters.clinicType && !c.clinicType?.toLowerCase().includes(filters.clinicType.toLowerCase())) match = false;
+                    if (filters.department && !c.departments?.some(d => d.toLowerCase().includes(filters.department.toLowerCase()))) match = false;
+                    if (filters.service && !c.services?.some(s => s.toLowerCase().includes(filters.service.toLowerCase()))) match = false;
+                    if (filters.appointmentRequired && filters.appointmentRequired !== "") {
+                        const required = filters.appointmentRequired === "true";
+                        if (c.appointmentRequired !== required) match = false;
+                    }
+                    return match;
+                });
 
-                if (dataTable) {
-                    dataTable.destroy();
-                    dataTable = null;
-                }
-
-                $('#clinicsTable tbody').empty();
+                const container = document.getElementById('clinicsCardContainer');
+                container.innerHTML = '';
 
                 if (clinics.length === 0) {
-                    $('#clinicsTable tbody').html(
-                        '<tr class="text-center"><td colspan="9" class="py-4 text-muted">No clinics found</td></tr>'
-                    );
+                    container.innerHTML = `
+                        <div class="col-12">
+                            <div class="card stat-card text-center py-5">
+                                <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                                <h5 class="text-muted">No clinics found matching criteria</h5>
+                            </div>
+                        </div>`;
                 } else {
                     clinics.forEach(clinic => {
                         const statusBadge = clinic.status === 'ACTIVE' ? 'bg-success' : 'bg-danger';
 
                         const appointmentBadge = clinic.appointmentRequired
-                            ? '<span class="badge bg-warning text-dark">Yes</span>'
-                            : '<span class="badge bg-secondary">No</span>';
+                            ? '<span class="badge bg-warning text-dark px-2 py-1"><i class="fas fa-calendar-check me-1"></i>Appt. Required</span>'
+                            : '<span class="badge bg-secondary bg-opacity-50 text-light px-2 py-1"><i class="fas fa-walking me-1"></i>Walk-in</span>';
 
-                        const row = `
-        <tr>
-            <td><strong>${clinic.clinicId || 'N/A'}</strong></td>
-            <td>${clinic.clinicName || 'N/A'}</td>
-            <td>${clinic.clinicType || 'N/A'}</td>
-            <td>${clinic.address?.city || 'N/A'}</td>
-            <td>${clinic.contact?.phone || 'N/A'}</td>
-            <td>${clinic.departments?.join(', ') || 'N/A'}</td>
-            <td>${clinic.services?.join(', ') || 'N/A'}</td>
-            <td>${appointmentBadge}</td>
-            <td><span class="badge ${statusBadge}">${clinic.status}</span></td>
-        </tr>
-    `;
-                        $('#clinicsTable tbody').append(row);
+                        const name = clinic.clinicName || 'N/A';
+                        const type = clinic.clinicType || 'N/A';
+                        const city = clinic.address?.city || 'N/A';
+                        const phone = clinic.contact?.phone || 'N/A';
+                        const depts = clinic.departments?.join(', ') || 'N/A';
+                        const services = clinic.services?.join(', ') || 'N/A';
+                        const clinicId = clinic.clinicId || 'N/A';
+
+                        const cardHTML = `
+                            <div class="col-md-6 col-lg-4 col-xl-3">
+                                <div class="card stat-card clinic-card h-100">
+                                    <div class="card-body p-3 d-flex flex-column">
+                                        
+                                        <div class="d-flex align-items-center mb-3 pb-3 border-bottom border-secondary border-opacity-10">
+                                            <div class="bg-success bg-opacity-10 rounded-circle p-2 me-3 d-flex align-items-center justify-content-center" style="width: 45px; height: 45px;">
+                                                <i class="fas fa-hospital text-success fa-lg"></i>
+                                            </div>
+                                            <div class="overflow-hidden">
+                                                <h6 class="mb-1 fw-bold text-truncate" title="${name}">${name}</h6>
+                                                <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill">${type}</span>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="d-flex flex-column gap-2 mb-3 small text-muted flex-grow-1">
+                                            <div class="d-flex align-items-center">
+                                                <i class="fas fa-hashtag me-2 text-secondary" style="width: 15px;"></i> 
+                                                <span>${clinicId}</span>
+                                            </div>
+                                            <div class="d-flex align-items-center">
+                                                <i class="fas fa-map-marker-alt me-2 text-secondary" style="width: 15px;"></i> 
+                                                <span class="text-truncate" title="${city}">${city}</span>
+                                            </div>
+                                            <div class="d-flex align-items-center">
+                                                <i class="fas fa-phone me-2 text-secondary" style="width: 15px;"></i> 
+                                                <span>${phone}</span>
+                                            </div>
+                                            <div class="d-flex align-items-center">
+                                                <i class="fas fa-stethoscope me-2 text-secondary" style="width: 15px;"></i> 
+                                                <span class="text-truncate" title="${depts}">${depts}</span>
+                                            </div>
+                                            <div class="d-flex align-items-center">
+                                                <i class="fas fa-notes-medical me-2 text-secondary" style="width: 15px;"></i> 
+                                                <span class="text-truncate" title="${services}">${services}</span>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="d-flex justify-content-between align-items-center pt-2 mt-auto border-top border-secondary border-opacity-10">
+                                            ${appointmentBadge}
+                                            <span class="badge ${statusBadge}">${clinic.status || 'UNKNOWN'}</span>
+                                        </div>
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                        container.innerHTML += cardHTML;
                     });
-                    initializeTable();
                 }
             } catch (error) {
                 console.error('Error loading clinics:', error);
                 showAlert('Error loading clinics', 'danger');
             }
         }
-        // Save clinic (Used for Edit inside Modal)
-        // Edit clinic
-        // Delete clinic
+
         function applyFilters() {
             const filters = {
                 clinicName: document.getElementById('filterClinicName')?.value || '',
                 status: document.getElementById('filterStatus')?.value || '',
                 city: document.getElementById('filterCity')?.value || '',
+                clinicType: document.getElementById('filterClinicType')?.value || '',
                 department: document.getElementById('filterDepartment')?.value || '',
                 service: document.getElementById('filterService')?.value || '',
                 appointmentRequired: document.getElementById('filterAppointmentRequired')?.value || ''
@@ -544,14 +487,13 @@
         }
 
         function resetFilters() {
-            document.getElementById('filterClinicName').value = '';
-            document.getElementById('filterStatus').value = '';
-            document.getElementById('filterCity').value = '';
+            document.getElementById('filterForm').reset();
             loadClinics();
         }
+
         function showAlert(message, type) {
             const alertHTML = `
-                <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                <div class="alert alert-${type} alert-dismissible fade show shadow-sm" role="alert">
                     ${message}
                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
@@ -560,11 +502,29 @@
             setTimeout(() => { document.querySelector('.alert')?.remove(); }, 5000);
         }
 
-        document.getElementById('filterClinicName').addEventListener('input', applyFilters);
+        // Apply debounced input for smooth typing filters
+        let typingTimer;
+        const doneTypingInterval = 300;
+
+        ['filterClinicName', 'filterCity', 'filterClinicType', 'filterDepartment', 'filterService'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.addEventListener('input', () => {
+                    clearTimeout(typingTimer);
+                    typingTimer = setTimeout(applyFilters, doneTypingInterval);
+                });
+            }
+        });
+
         document.getElementById('filterStatus').addEventListener('change', applyFilters);
-        document.getElementById('filterCity').addEventListener('input', applyFilters);
+        document.getElementById('filterAppointmentRequired').addEventListener('change', applyFilters);
 
         document.addEventListener('DOMContentLoaded', () => {
+            const name = localStorage.getItem("userName");
+            if (name) {
+                document.getElementById("doctorDisplayName").innerText = name;
+                document.getElementById("doctorAvatar").src = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=10b981&color=fff`;
+            }
             loadClinics();
         });
     </script>

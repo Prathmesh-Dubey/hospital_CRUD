@@ -15,7 +15,7 @@ public class Patient {
 
     @Indexed(unique = true)
     private String patientId;
-    
+
     private String fullName;
     private LocalDate dateOfBirth;
     private String gender;
@@ -36,7 +36,7 @@ public class Patient {
     private Integer height; // in cm
     private Integer weight; // in kg
 
-    private String doctorId;
+    private List<String> doctorIds;
 
     // ---------- CONSTRUCTORS ----------
 
@@ -164,16 +164,20 @@ public class Patient {
     public void setWeight(Integer weight) {
         this.weight = weight;
     }
+
     public String getPassword() {
         return password;
     }
+
     public void setPassword(String password) {
         this.password = password;
     }
-    public String getDoctorId() {
-        return doctorId;
+
+    public List<String> getDoctorIds() {
+        return doctorIds;
     }
-    public void setDoctorId(String doctorId) {
-        this.doctorId = doctorId;
+
+    public void setDoctorIds(List<String> doctorIds) {
+        this.doctorIds = doctorIds;
     }
 }

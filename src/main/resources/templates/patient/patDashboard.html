@@ -213,7 +213,7 @@
                             <li>
                                 <hr class="dropdown-divider bg-secondary">
                             </li>
-                            <li><a class="dropdown-item text-danger" href="/logout">Logout</a></li>
+                            <li><a class="dropdown-item text-danger" href="/">Logout</a></li>
                         </ul>
                     </li>
                 </ul>
@@ -242,8 +242,13 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/patient/tests">
+                        <a class="nav-link" href="/patient/medTest">
                             <i class="fas fa-flask me-2"></i> Lab Tests
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/patient/prescriptions">
+                            <i class="fas fa-prescription me-2"></i> My Prescriptions
                         </a>
                     </li>
                 </ul>
@@ -395,7 +400,7 @@
                     maintainAspectRatio: false,
                     plugins: { legend: { display: false } },
                     scales: {
-                        y: { beginAtZero: true, ticks: { color: textColor }, grid: { color: 'rgba(255,255,255,0.05)' } },
+                        y: { beginAtZero: true, ticks: { color: textColor, stepSize: 1 }, grid: { color: 'rgba(255,255,255,0.05)' } },
                         x: { ticks: { color: textColor }, grid: { display: false } }
                     }
                 }
@@ -414,23 +419,38 @@
             });
         }
 
-        // --- 3. FETCH REAL DATA ---
+        // --- 3. FETCH REAL PATIENT-SPECIFIC DATA ---
         async function loadPublicData() {
+            const userId = localStorage.getItem("userId");
+            if (!userId) return;
+
             try {
-                // Fetching public directories
-                const [doctorsRes, clinicsRes, testsRes] = await Promise.all([
-                    axios.get('/api/doctors').catch(() => ({ data: [] })),
-                    axios.get('/api/clinics').catch(() => ({ data: [] })),
-                    axios.get('/api/medical-tests').catch(() => ({ data: [] }))
+                // Fetching patient-specific data
+                const [prescriptionsRes, testsRes, clinicsRes] = await Promise.all([
+                    axios.get(`/api/prescriptions/patients-safe/${userId}`).catch(() => ({ data: [] })),
+                    axios.get(`/api/medical-tests/patients/${userId}`).catch(() => ({ data: [] })),
+                    // Keeping clinics as public lookup since patients don't have personal 'owned' clinics
+                    axios.get('/api/clinics').catch(() => ({ data: [] })) 
                 ]);
 
+                const prescriptions = prescriptionsRes.data || [];
+                const tests = testsRes.data || [];
+
+                // Count unique doctors from the patient's prescriptions
+                const uniqueDoctors = new Set();
+                prescriptions.forEach(p => {
+                    if (p.currentDoctor && p.currentDoctor.doctorId) {
+                        uniqueDoctors.add(p.currentDoctor.doctorId);
+                    }
+                });
+
                 const counts = {
-                    doctors: doctorsRes.data ? doctorsRes.data.length : 0,
+                    doctors: uniqueDoctors.size,
                     clinics: clinicsRes.data ? clinicsRes.data.length : 0,
-                    tests: testsRes.data ? testsRes.data.length : 0
+                    tests: tests.length
                 };
 
-                // Update UI Numbers
+                // Update UI Numbers using your exact HTML ids
                 $('#totalDoctors').text(counts.doctors);
                 $('#totalClinics').text(counts.clinics);
                 $('#totalTests').text(counts.tests);
@@ -440,7 +460,6 @@
 
             } catch (error) {
                 console.error("Failed to load patient data:", error);
-                // Non-blocking catch to prevent the entire UI from failing if one endpoint drops
             }
         }
 
@@ -454,14 +473,10 @@
                 return;
             }
 
-            // Instant UI update (feels fast)
+            // Instant UI update
             document.getElementById("patientName").innerText = storedName;
-
-            // Populating the new ID section directly from localStorage
-           
-
             document.getElementById("patientAvatar").src =
-                `https://ui-avatars.com/api/?name=${storedName}&background=2dd4bf&color=0f172a`;
+                `https://ui-avatars.com/api/?name=${encodeURIComponent(storedName)}&background=2dd4bf&color=0f172a`;
 
             try {
                 const response = await axios.get(`/api/patients/${userId}`);
@@ -469,12 +484,8 @@
 
                 // Update with fresh DB value (if changed)
                 document.getElementById("patientName").innerText = patient.fullName;
-
-                // If your backend returns a specially formatted ID (e.g. "PT-1004"), you can overwrite it here:
-                // document.getElementById("patientIdDisplay").innerText = `ID: ${patient.patientId}`;
-
                 document.getElementById("patientAvatar").src =
-                    `https://ui-avatars.com/api/?name=${patient.fullName}&background=2dd4bf&color=0f172a`;
+                    `https://ui-avatars.com/api/?name=${encodeURIComponent(patient.fullName)}&background=2dd4bf&color=0f172a`;
 
             } catch (error) {
                 console.error("Failed to verify patient:", error);

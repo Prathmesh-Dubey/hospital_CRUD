@@ -1,5 +1,7 @@
 package com.example.springcrud.controller;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -60,7 +62,7 @@ public class PatientController {
                 patient.setPatientId("PAT-" + (1000 + seq));
 
                 // Assign doctorId automatically
-                patient.setDoctorId(doctorId);
+                patient.setDoctorIds(Collections.singletonList(doctorId));
 
                 // Hash password
                 patient.setPassword(passwordEncoder.encode(patient.getPassword()));
@@ -74,7 +76,7 @@ public class PatientController {
 
         @GetMapping("/doctor/{doctorId}")
         public ResponseEntity<List<Patient>> getPatientsByDoctor(@PathVariable String doctorId) {
-                List<Patient> patients = patientRepository.findByDoctorId(doctorId);
+                List<Patient> patients = patientRepository.findByDoctorIdsContaining(doctorId);
                 return ResponseEntity.ok(patients);
         }
 
@@ -260,7 +262,7 @@ public class PatientController {
                         @RequestParam(required = false) String phone,
                         @RequestParam(required = false) String emailAddress) {
 
-                List<Patient> patients = patientRepository.findByDoctorId(doctorId);
+                List<Patient> patients = patientRepository.findByDoctorIdsContaining(doctorId);
 
                 List<Patient> filtered = patients.stream()
 
@@ -301,38 +303,6 @@ public class PatientController {
         }
 
         // UPDATE (DetailsController style)
-        @PutMapping("/{id}")
-        public ResponseEntity<Patient> updatePatient(
-                        @PathVariable String id,
-                        @RequestBody Patient patient) {
-
-                Optional<Patient> patientOptional = patientRepository.findById(id);
-
-                if (patientOptional.isPresent()) {
-                        Patient patientToUpdate = patientOptional.get();
-
-                        // DO NOT update patientId
-                        patientToUpdate.setFullName(patient.getFullName());
-                        patientToUpdate.setDateOfBirth(patient.getDateOfBirth());
-                        patientToUpdate.setGender(patient.getGender());
-                        patientToUpdate.setPhone(patient.getPhone());
-                        patientToUpdate.setEmailAddress(patient.getEmailAddress());
-                        patientToUpdate.setResidentialAddress(patient.getResidentialAddress());
-                        patientToUpdate.setEmergencyContact(patient.getEmergencyContact());
-                        patientToUpdate.setBloodGroup(patient.getBloodGroup());
-                        patientToUpdate.setAllergies(patient.getAllergies());
-                        patientToUpdate.setChronicDiseases(patient.getChronicDiseases());
-                        patientToUpdate.setCurrentMedications(patient.getCurrentMedications());
-                        patientToUpdate.setHeight(patient.getHeight());
-                        patientToUpdate.setWeight(patient.getWeight());
-
-                        Patient updatedPatient = patientRepository.save(patientToUpdate);
-                        return new ResponseEntity<>(updatedPatient, HttpStatus.OK);
-
-                } else {
-                        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-                }
-        }
 
         @PostMapping("/login")
         public ResponseEntity<?> loginPatient(@RequestBody LoginRequest request) {
@@ -346,7 +316,7 @@ public class PatientController {
 
                         LoginResponse response = new LoginResponse(
                                         "Login Successful",
-                                        loggedInPatient.getId(),
+                                        loggedInPatient.getPatientId(),
                                         loggedInPatient.getFullName(),
                                         "PATIENT");
 
@@ -380,7 +350,7 @@ public class PatientController {
                         return ResponseEntity.badRequest().body("Missing required fields");
                 }
 
-                Optional<Patient> optionalPatient = patientRepository.findById(userId);
+                Optional<Patient> optionalPatient = patientRepository.findByPatientId(userId);
 
                 if (!optionalPatient.isPresent()) {
                         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Patient not found");
@@ -399,5 +369,96 @@ public class PatientController {
                 patientRepository.save(patient);
 
                 return ResponseEntity.ok("Password updated successfully");
+        }
+
+        @PutMapping("/{patientId}/assign-doctor/{doctorId}")
+        public ResponseEntity<?> assignDoctor(
+                        @PathVariable String patientId,
+                        @PathVariable String doctorId) {
+
+                Optional<Patient> optionalPatient = patientRepository.findByPatientId(patientId);
+
+                if (!optionalPatient.isPresent()) {
+                        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Patient not found");
+                }
+
+                Patient patient = optionalPatient.get();
+
+                if (patient.getDoctorIds() == null) {
+                        patient.setDoctorIds(new ArrayList<>());
+                }
+
+                if (!patient.getDoctorIds().contains(doctorId)) {
+                        patient.getDoctorIds().add(doctorId);
+                        patientRepository.save(patient);
+                }
+
+                return ResponseEntity.ok("Doctor assigned successfully");
+        }
+
+        @PutMapping("/by-patient-id/{patientId}")
+        public ResponseEntity<Patient> updateByPatientId(
+                        @PathVariable String patientId,
+                        @RequestBody Patient updatedData) {
+
+                Optional<Patient> optional = patientRepository.findByPatientId(patientId);
+
+                if (!optional.isPresent()) {
+                        return ResponseEntity.notFound().build();
+                }
+
+                Patient patient = optional.get();
+
+                patient.setFullName(updatedData.getFullName());
+                patient.setDateOfBirth(updatedData.getDateOfBirth());
+                patient.setGender(updatedData.getGender());
+                patient.setPhone(updatedData.getPhone());
+                patient.setEmailAddress(updatedData.getEmailAddress());
+                patient.setResidentialAddress(updatedData.getResidentialAddress());
+                patient.setEmergencyContact(updatedData.getEmergencyContact());
+                patient.setBloodGroup(updatedData.getBloodGroup());
+                patient.setAllergies(updatedData.getAllergies());
+                patient.setChronicDiseases(updatedData.getChronicDiseases());
+                patient.setCurrentMedications(updatedData.getCurrentMedications());
+                patient.setHeight(updatedData.getHeight());
+                patient.setWeight(updatedData.getWeight());
+
+                Patient saved = patientRepository.save(patient);
+                saved.setPassword(null);
+
+                return ResponseEntity.ok(saved);
+        }
+
+        @PutMapping("/{id}")
+        public ResponseEntity<Patient> updatePatient(
+                        @PathVariable String id,
+                        @RequestBody Patient updatedData) {
+
+                Optional<Patient> optional = patientRepository.findById(id);
+
+                if (!optional.isPresent()) {
+                        return ResponseEntity.notFound().build();
+                }
+
+                Patient patient = optional.get();
+
+                patient.setFullName(updatedData.getFullName());
+                patient.setDateOfBirth(updatedData.getDateOfBirth());
+                patient.setGender(updatedData.getGender());
+                patient.setPhone(updatedData.getPhone());
+                patient.setEmailAddress(updatedData.getEmailAddress());
+                patient.setResidentialAddress(updatedData.getResidentialAddress());
+                patient.setEmergencyContact(updatedData.getEmergencyContact());
+                patient.setBloodGroup(updatedData.getBloodGroup());
+                patient.setAllergies(updatedData.getAllergies());
+                patient.setChronicDiseases(updatedData.getChronicDiseases());
+                patient.setCurrentMedications(updatedData.getCurrentMedications());
+                patient.setHeight(updatedData.getHeight());
+                patient.setWeight(updatedData.getWeight());
+
+                Patient saved = patientRepository.save(patient);
+                saved.setPassword(null);
+
+                return ResponseEntity.ok(saved);
         }
 }

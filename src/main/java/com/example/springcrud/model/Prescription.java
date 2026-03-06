@@ -17,6 +17,7 @@ public class Prescription {
     private String prescriptionId;
     private String recordStatus;
 
+    private LocalDateTime createdDate;
     private Boolean doctorChangeAllowed;
 
     private Patient patient;
@@ -507,5 +508,13 @@ public class Prescription {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public LocalDateTime getCreatedDate() {
+        return createdDate;
+    }
+
+    public void setCreatedDate(LocalDateTime createdDate) {
+        this.createdDate = createdDate;
     }
 }

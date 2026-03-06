@@ -18,4 +18,5 @@ public interface MedicalTestRepository extends MongoRepository<MedicalTest, Stri
     List<MedicalTest> findByResultStatusIgnoreCase(String resultStatus);
     List<MedicalTest> findByDoctorIdAndPatientId(String doctorId, String patientId);
     Optional<MedicalTest> findByTestId(String testId);
+    Optional<MedicalTest> findByTestIdAndPatientId(String testId, String patientId);
 }

@@ -10,17 +10,21 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
-        /* --- PRO ADMIN THEME ENGINE (Dashboard Match) --- */
+        /* --- PRO ADMIN THEME ENGINE --- */
         :root {
             --bg-color: #0f172a;
             --sidebar-bg: #1e293b;
             --card-bg: #1e293b;
             --text-main: #f1f5f9;
             --text-muted: #94a3b8;
-            --navbar-bg: rgba(30, 41, 59, 0.8);
+            --navbar-bg: rgba(30, 41, 59, 0.95);
             --accent-blue: #38bdf8;
             --border-color: rgba(255, 255, 255, 0.05);
             --input-bg: rgba(15, 23, 42, 0.6);
+            
+            /* Layout Variables */
+            --navbar-height: 70px;
+            --sidebar-width: 260px;
         }
 
         [data-bs-theme="light"] {
@@ -29,7 +33,7 @@
             --card-bg: #ffffff;
             --text-main: #1e293b;
             --text-muted: #64748b;
-            --navbar-bg: rgba(255, 255, 255, 0.9);
+            --navbar-bg: rgba(255, 255, 255, 0.95);
             --border-color: rgba(0, 0, 0, 0.1);
             --input-bg: #f1f5f9;
         }
@@ -39,26 +43,56 @@
             background-color: var(--bg-color);
             color: var(--text-main);
             transition: background-color 0.3s, color 0.3s;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            padding-top: var(--navbar-height); /* Offset for fixed navbar */
         }
 
-        /* --- FIXED LAYOUT (Dashboard Style) --- */
+        /* --- LOCKED NAVBAR --- */
         .navbar {
             background-color: var(--navbar-bg) !important;
             backdrop-filter: blur(10px);
             border-bottom: 1px solid var(--border-color);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: var(--navbar-height);
+            z-index: 1030;
         }
 
+        /* --- LOCKED SIDEBAR --- */
         .sidebar {
             background-color: var(--sidebar-bg);
-            min-height: 100vh;
             border-right: 1px solid var(--border-color);
+            position: fixed;
+            top: var(--navbar-height);
+            left: 0;
+            bottom: 0;
+            width: var(--sidebar-width);
+            z-index: 1020;
+            overflow-y: auto;
+            transition: transform 0.3s ease;
+        }
+
+        /* --- MAIN SCROLLABLE CONTENT --- */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            min-height: calc(100vh - var(--navbar-height));
+            padding: 2rem;
+            transition: margin-left 0.3s ease, padding 0.3s ease;
+        }
+
+        /* Responsive Breakpoints */
+        @media (max-width: 768px) {
+            .sidebar { transform: translateX(-100%); }
+            .main-content { margin-left: 0; padding: 1rem; }
+            .search-wrapper { display: none !important; }
         }
 
         /* --- SEARCH BAR --- */
-        .search-wrapper {
-            position: relative;
-            width: 400px;
-        }
+        .search-wrapper { position: relative; width: 400px; }
         .search-wrapper input {
             background: var(--input-bg) !important;
             border: 1px solid var(--accent-blue);
@@ -74,23 +108,9 @@
         }
 
         /* --- COMPONENTS --- */
-        .nav-link {
-            color: var(--text-muted);
-            font-weight: 500;
-            padding: 12px 20px;
-            margin: 8px 15px;
-            border-radius: 10px;
-            transition: 0.2s;
-        }
-        .nav-link:hover {
-            background: rgba(56, 189, 248, 0.1);
-            color: var(--accent-blue);
-        }
-        .nav-link.active {
-            background: var(--accent-blue);
-            color: #fff;
-            box-shadow: 0 4px 12px rgba(56, 189, 248, 0.3);
-        }
+        .nav-link { color: var(--text-muted); font-weight: 500; padding: 12px 20px; margin: 8px 15px; border-radius: 10px; transition: 0.2s; }
+        .nav-link:hover { background: rgba(56, 189, 248, 0.1); color: var(--accent-blue); }
+        .nav-link.active { background: var(--accent-blue); color: #fff; box-shadow: 0 4px 12px rgba(56, 189, 248, 0.3); }
 
         .stat-card {
             background: var(--card-bg);
@@ -109,15 +129,15 @@
             padding: 10px 15px;
             transition: all 0.2s;
         }
-        .input-group-text {
-            color: var(--text-muted);
-        }
+
+        .input-group-text { color: var(--text-muted); }
         .form-control:focus {
             background-color: var(--input-bg);
             border-color: var(--accent-blue);
             color: var(--text-main);
             box-shadow: 0 0 0 0.25rem rgba(56, 189, 248, 0.15);
         }
+
         .form-control[readonly], .form-control:disabled {
             background-color: transparent;
             border-color: var(--border-color);
@@ -131,23 +151,9 @@
         .text-accent { color: var(--accent-blue) !important; }
         .border-accent { border-color: var(--accent-blue) !important; }
         .bg-accent { background-color: var(--accent-blue) !important; color: #fff !important; }
-
-        .btn-accent {
-            background-color: var(--accent-blue);
-            border-color: var(--accent-blue);
-            color: #fff;
-        }
-        .btn-accent:hover {
-            background-color: #0284c7;
-            border-color: #0284c7;
-            color: #fff;
-        }
-
-        .theme-toggle {
-            cursor: pointer;
-            font-size: 1.2rem;
-            color: var(--accent-blue);
-        }
+        .btn-accent { background-color: var(--accent-blue); border-color: var(--accent-blue); color: #fff; }
+        .btn-accent:hover { background-color: #0284c7; border-color: #0284c7; color: #fff; }
+        .theme-toggle { cursor: pointer; font-size: 1.2rem; color: var(--accent-blue); }
 
         /* --- PROFILE SPECIFICS --- */
         .profile-header-bg {
@@ -174,23 +180,21 @@
             margin-bottom: 1rem;
         }
 
-        .toggle-password {
-            cursor: pointer;
-            transition: background-color 0.2s ease;
-            user-select: none;
-        }
-        .toggle-password:hover {
-            background-color: rgba(56, 189, 248, 0.1);
-        }
-
+        .toggle-password { cursor: pointer; transition: background-color 0.2s ease; user-select: none; }
+        .toggle-password:hover { background-color: rgba(56, 189, 248, 0.1); }
         .detail-row { border-bottom: 1px solid var(--border-color); }
         .detail-row:last-child { border-bottom: none; }
+        
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
     </style>
 </head>
 
 <body data-bs-theme="dark">
 
-    <nav class="navbar navbar-expand-lg sticky-top">
+    <nav class="navbar navbar-expand-lg">
         <div class="container-fluid px-4">
             <a class="navbar-brand fw-bold d-flex align-items-center" href="/admin" style="color: var(--text-main)">
                 <div class="bg-info rounded-3 p-2 me-2 d-flex align-items-center justify-content-center"
@@ -226,10 +230,15 @@
                                 class="rounded-circle me-2" width="32" id="navAvatar">
                             <span id="navAdminName">Admin</span>
                         </a>
-                        <ul class="dropdown-menu dropdown-menu-end shadow border-0" style="background-color: var(--card-bg);">
-                            <li><a class="dropdown-item active bg-accent" href="/admin/profile"><i class="fas fa-user me-2"></i>Profile</a></li>
-                            <li><hr class="dropdown-divider" style="border-color: var(--border-color)"></li>
-                            <li><button class="dropdown-item text-danger bg-transparent" onclick="logout()"><i class="fas fa-sign-out-alt me-2"></i>Logout</button></li>
+                        <ul class="dropdown-menu dropdown-menu-end shadow border-0"
+                            style="background-color: var(--card-bg);">
+                            <li><a class="dropdown-item active bg-accent" href="/admin/profile"><i
+                                        class="fas fa-user me-2"></i>Profile</a></li>
+                            <li>
+                                <hr class="dropdown-divider" style="border-color: var(--border-color)">
+                            </li>
+                            <li><button class="dropdown-item text-danger bg-transparent" onclick="logout()"><i
+                                        class="fas fa-sign-out-alt me-2"></i>Logout</button></li>
                         </ul>
                     </li>
                 </ul>
@@ -237,143 +246,140 @@
         </div>
     </nav>
 
-    <div class="container-fluid">
-        <div class="row">
+    <div>
+        <nav class="d-none d-md-block sidebar">
+            <div class="pt-4">
+                <ul class="nav flex-column">
+                    <li class="nav-item"><a class="nav-link" href="/admin"><i class="fas fa-chart-pie me-2"></i> Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/admin/patients"><i class="fas fa-user-injured me-2"></i> Patients</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/admin/doctors"><i class="fas fa-user-md me-2"></i> Doctors</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/admin/clinics"><i class="fas fa-hospital-alt me-2"></i> Clinics</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/admin/medicines"><i class="fas fa-pills me-2"></i> Medicines</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/admin/tests"><i class="fas fa-flask me-2"></i> Tests</a></li>
+                </ul>
+            </div>
+        </nav>
 
-            <nav class="col-md-2 d-none d-md-block sidebar px-0">
-                <div class="position-sticky pt-4">
-                    <ul class="nav flex-column">
-                        <li class="nav-item"><a class="nav-link" href="/admin"><i class="fas fa-chart-pie me-2"></i> Dashboard</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/admin/patients"><i class="fas fa-user-injured me-2"></i> Patients</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/admin/doctors"><i class="fas fa-user-md me-2"></i> Doctors</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/admin/clinics"><i class="fas fa-hospital-alt me-2"></i> Clinics</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/admin/medicines"><i class="fas fa-pills me-2"></i> Medicines</a></li>
-                    </ul>
+        <main class="main-content">
+
+            <div class="d-flex justify-content-between align-items-end mb-4">
+                <div>
+                    <h2 class="fw-bold mb-0 text-white-custom">My Profile</h2>
+                    <p class="text-secondary mb-0">Manage your account settings and security</p>
                 </div>
-            </nav>
+            </div>
 
-            <main class="col-md-10 ms-sm-auto px-md-4 py-4">
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="card stat-card p-4 pt-0 h-100 text-center">
+                        <div class="profile-header-bg"></div>
 
-                <div class="d-flex justify-content-between align-items-end mb-4">
-                    <div>
-                        <h2 class="fw-bold mb-0 text-white-custom">My Profile</h2>
-                        <p class="text-secondary mb-0">Manage your account settings and security</p>
+                        <div class="d-flex flex-column align-items-center">
+                            <div class="avatar-container">
+                                <i class="fas fa-user-shield"></i>
+                            </div>
+                            <h4 class="fw-bold text-white-custom mb-1" id="adminName">Loading...</h4>
+                            <p class="text-muted mb-3" id="adminEmail">loading...</p>
+
+                            <span class="badge bg-success rounded-pill px-3 py-2 mb-4" id="adminStatus">ACTIVE</span>
+
+                            <div class="w-100 text-start px-3 mt-2">
+                                <div class="d-flex justify-content-between py-3 detail-row">
+                                    <span class="text-muted small text-uppercase fw-bold">Role</span>
+                                    <span class="fw-bold text-white-custom" id="adminRole">...</span>
+                                </div>
+                                <div class="d-flex justify-content-between py-3 detail-row">
+                                    <span class="text-muted small text-uppercase fw-bold">Joined</span>
+                                    <span class="fw-bold text-white-custom" id="adminCreatedAt">...</span>
+                                </div>
+                                <div class="d-flex justify-content-between py-3 detail-row">
+                                    <span class="text-muted small text-uppercase fw-bold">Last Login</span>
+                                    <span class="fw-bold text-white-custom" id="adminLastLogin">...</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <div class="row g-4">
-                    <div class="col-md-4">
-                        <div class="card stat-card p-4 pt-0 h-100 text-center">
-                            <div class="profile-header-bg"></div>
-
-                            <div class="d-flex flex-column align-items-center">
-                                <div class="avatar-container">
-                                    <i class="fas fa-user-shield"></i>
+                <div class="col-md-8">
+                    <div class="card stat-card mb-4">
+                        <div class="card-header bg-transparent py-3 border-bottom"
+                            style="border-color: var(--border-color) !important;">
+                            <h5 class="mb-0 fw-bold text-white-custom border-start border-4 border-accent ps-3">
+                                <i class="fas fa-id-card me-2 text-accent"></i>Contact Information
+                            </h5>
+                        </div>
+                        <div class="card-body p-4">
+                            <div class="row g-4">
+                                <div class="col-md-6">
+                                    <label class="form-label text-muted small text-uppercase fw-bold">Phone Number</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text border-end-0"><i class="fas fa-phone"></i></span>
+                                        <input type="text" class="form-control border-start-0 ps-0" id="adminPhone" readonly value="...">
+                                    </div>
                                 </div>
-                                <h4 class="fw-bold text-white-custom mb-1" id="adminName">Loading...</h4>
-                                <p class="text-muted mb-3" id="adminEmail">loading...</p>
-
-                                <span class="badge bg-success rounded-pill px-3 py-2 mb-4" id="adminStatus">ACTIVE</span>
-
-                                <div class="w-100 text-start px-3 mt-2">
-                                    <div class="d-flex justify-content-between py-3 detail-row">
-                                        <span class="text-muted small text-uppercase fw-bold">Role</span>
-                                        <span class="fw-bold text-white-custom" id="adminRole">...</span>
-                                    </div>
-                                    <div class="d-flex justify-content-between py-3 detail-row">
-                                        <span class="text-muted small text-uppercase fw-bold">Joined</span>
-                                        <span class="fw-bold text-white-custom" id="adminCreatedAt">...</span>
-                                    </div>
-                                    <div class="d-flex justify-content-between py-3 detail-row">
-                                        <span class="text-muted small text-uppercase fw-bold">Last Login</span>
-                                        <span class="fw-bold text-white-custom" id="adminLastLogin">...</span>
+                                <div class="col-md-6">
+                                    <label class="form-label text-muted small text-uppercase fw-bold">Email Address</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text border-end-0"><i class="fas fa-envelope"></i></span>
+                                        <input type="text" class="form-control border-start-0 ps-0" id="displayEmail" readonly value="...">
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="col-md-8">
-                        <div class="card stat-card mb-4">
-                            <div class="card-header bg-transparent py-3 border-bottom"
-                                style="border-color: var(--border-color) !important;">
-                                <h5 class="mb-0 fw-bold text-white-custom border-start border-4 border-accent ps-3">
-                                    <i class="fas fa-id-card me-2 text-accent"></i>Contact Information
-                                </h5>
-                            </div>
-                            <div class="card-body p-4">
-                                <div class="row g-4">
-                                    <div class="col-md-6">
-                                        <label class="form-label text-muted small text-uppercase fw-bold">Phone Number</label>
-                                        <div class="input-group">
-                                            <span class="input-group-text border-end-0"><i class="fas fa-phone"></i></span>
-                                            <input type="text" class="form-control border-start-0 ps-0" id="adminPhone" readonly value="...">
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label text-muted small text-uppercase fw-bold">Email Address</label>
-                                        <div class="input-group">
-                                            <span class="input-group-text border-end-0"><i class="fas fa-envelope"></i></span>
-                                            <input type="text" class="form-control border-start-0 ps-0" id="displayEmail" readonly value="...">
-                                        </div>
+                    <div class="card stat-card">
+                        <div class="card-header bg-transparent py-3 border-bottom"
+                            style="border-color: var(--border-color) !important;">
+                            <h5 class="mb-0 fw-bold text-white-custom border-start border-4 border-accent ps-3">
+                                <i class="fas fa-lock me-2 text-accent"></i>Security Settings
+                            </h5>
+                        </div>
+                        <div class="card-body p-4">
+                            <form onsubmit="event.preventDefault(); changePassword();">
+                                <div class="mb-4">
+                                    <label class="form-label text-muted small text-uppercase fw-bold">Current Password</label>
+                                    <div class="input-group">
+                                        <input type="password" id="oldPassword" class="form-control" placeholder="Enter current password">
+                                        <span class="input-group-text toggle-password" onclick="togglePassword('oldPassword', this)">
+                                            <i class="fas fa-eye"></i>
+                                        </span>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
 
-                        <div class="card stat-card">
-                            <div class="card-header bg-transparent py-3 border-bottom"
-                                style="border-color: var(--border-color) !important;">
-                                <h5 class="mb-0 fw-bold text-white-custom border-start border-4 border-accent ps-3">
-                                    <i class="fas fa-lock me-2 text-accent"></i>Security Settings
-                                </h5>
-                            </div>
-                            <div class="card-body p-4">
-                                <form onsubmit="event.preventDefault(); changePassword();">
-                                    <div class="mb-4">
-                                        <label class="form-label text-muted small text-uppercase fw-bold">Current Password</label>
+                                <div class="row g-4 mb-4">
+                                    <div class="col-md-6">
+                                        <label class="form-label text-muted small text-uppercase fw-bold">New Password</label>
                                         <div class="input-group">
-                                            <input type="password" id="oldPassword" class="form-control" placeholder="Enter current password">
-                                            <span class="input-group-text toggle-password" onclick="togglePassword('oldPassword', this)">
+                                            <input type="password" id="newPassword" class="form-control" placeholder="Enter new password">
+                                            <span class="input-group-text toggle-password" onclick="togglePassword('newPassword', this)">
                                                 <i class="fas fa-eye"></i>
                                             </span>
                                         </div>
                                     </div>
-
-                                    <div class="row g-4 mb-4">
-                                        <div class="col-md-6">
-                                            <label class="form-label text-muted small text-uppercase fw-bold">New Password</label>
-                                            <div class="input-group">
-                                                <input type="password" id="newPassword" class="form-control" placeholder="Enter new password">
-                                                <span class="input-group-text toggle-password" onclick="togglePassword('newPassword', this)">
-                                                    <i class="fas fa-eye"></i>
-                                                </span>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label class="form-label text-muted small text-uppercase fw-bold">Confirm New Password</label>
-                                            <div class="input-group">
-                                                <input type="password" id="confirmPassword" class="form-control" placeholder="Re-enter new password">
-                                                <span class="input-group-text toggle-password" onclick="togglePassword('confirmPassword', this)">
-                                                    <i class="fas fa-eye"></i>
-                                                </span>
-                                            </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label text-muted small text-uppercase fw-bold">Confirm New Password</label>
+                                        <div class="input-group">
+                                            <input type="password" id="confirmPassword" class="form-control" placeholder="Re-enter new password">
+                                            <span class="input-group-text toggle-password" onclick="togglePassword('confirmPassword', this)">
+                                                <i class="fas fa-eye"></i>
+                                            </span>
                                         </div>
                                     </div>
-                                    <div class="text-end">
-                                        <button type="submit" class="btn btn-accent rounded-pill px-4 fw-bold">
-                                            <i class="fas fa-key me-2"></i>Update Password
-                                        </button>
-                                    </div>
-                                </form>
-                            </div>
+                                </div>
+                                <div class="text-end">
+                                    <button type="submit" class="btn btn-accent rounded-pill px-4 fw-bold">
+                                        <i class="fas fa-key me-2"></i>Update Password
+                                    </button>
+                                </div>
+                            </form>
                         </div>
-
                     </div>
                 </div>
+            </div>
 
-            </main>
-        </div>
+        </main>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -398,7 +404,7 @@
             applyTheme(newTheme);
         });
 
-        // --- CORE LOGIC ---
+        // --- CORE PROFILE LOGIC ---
         document.addEventListener("DOMContentLoaded", function () {
             // Apply saved theme
             const savedTheme = localStorage.getItem('hms_theme') || 'dark';

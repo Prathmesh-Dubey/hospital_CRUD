@@ -11,7 +11,11 @@ import com.example.springcrud.model.Patient;
 public interface PatientRepository extends MongoRepository<Patient, String> {
 
     Optional<Patient> findByPhone(String phone);
-    List<Patient> findByDoctorId(String doctorId);
+
+    List<Patient> findByDoctorIdsContaining(String doctorId);
+
     Optional<Patient> findByPatientId(String patientId);
+
+    
 
 }

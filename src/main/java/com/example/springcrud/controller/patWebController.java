@@ -3,6 +3,7 @@ package com.example.springcrud.controller;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 @Controller
 public class patWebController {
@@ -41,8 +42,28 @@ public class patWebController {
     public String patientAddTestPage() {
         return "patient/patAddTest";
     }
+
     @GetMapping("/patient/profile")
     public String patientProfilePage() {
         return "patient/patProfile";
+    }
+
+    @GetMapping("/patient/medTest")
+    public String patientMedTestPage() {
+        return "patient/patTest";
+    }
+
+    @GetMapping("/patient/tests/{testId}")
+    public String viewTestPage(@PathVariable String testId) {
+        return "patient/patViewTest"; // your HTML file name
+    }
+    @GetMapping("/patient/prescriptions")
+    public String patientPrescriptionsPage() {
+        return "patient/patPrescription";
+    }
+
+    @GetMapping("/patient/prescriptions/{prescriptionId}")
+    public String viewPrescriptionPage(@PathVariable String prescriptionId) {
+        return "patient/patViewPrescription";
     }
 }

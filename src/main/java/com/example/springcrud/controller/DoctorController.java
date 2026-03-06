@@ -279,4 +279,14 @@ public class DoctorController {
                 return ResponseEntity.ok("Password reset successful");
         }
 
+        @GetMapping("/by-doctor-id/{doctorId}")
+        public ResponseEntity<Doctor> getByDoctorId(@PathVariable String doctorId) {
+
+                Optional<Doctor> doctor = doctorRepository.findByDoctorId(doctorId);
+
+                return doctor
+                                .map(d -> new ResponseEntity<>(d, HttpStatus.OK))
+                                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+        }
+
 }

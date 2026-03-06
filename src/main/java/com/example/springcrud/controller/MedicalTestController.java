@@ -188,4 +188,17 @@ public class MedicalTestController {
             return ResponseEntity.notFound().build();
         }
     }
+
+    @GetMapping("/patient/{patientId}/test/{testId}")
+    public ResponseEntity<?> getPatientTest(
+            @PathVariable String patientId,
+            @PathVariable String testId) {
+
+        Optional<MedicalTest> test = medicalTestRepository.findByTestIdAndPatientId(testId, patientId);
+
+        if (!test.isPresent()) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        return ResponseEntity.ok(test.get());
+    }
 }

@@ -17,10 +17,14 @@
             --card-bg: #1e293b;
             --text-main: #f1f5f9;
             --text-muted: #94a3b8;
-            --navbar-bg: rgba(30, 41, 59, 0.8);
+            --navbar-bg: rgba(30, 41, 59, 0.95); /* Increased opacity for fixed bar */
             --accent-blue: #38bdf8;
             --border-color: rgba(255, 255, 255, 0.05);
             --input-bg: rgba(15, 23, 42, 0.6);
+            
+            /* Layout Variables */
+            --navbar-height: 70px;
+            --sidebar-width: 260px;
         }
 
         [data-bs-theme="light"] {
@@ -29,7 +33,7 @@
             --card-bg: #ffffff;
             --text-main: #1e293b;
             --text-muted: #64748b;
-            --navbar-bg: rgba(255, 255, 255, 0.9);
+            --navbar-bg: rgba(255, 255, 255, 0.95);
             --border-color: rgba(0, 0, 0, 0.1);
             --input-bg: #f1f5f9;
         }
@@ -39,27 +43,55 @@
             background-color: var(--bg-color);
             color: var(--text-main);
             transition: background-color 0.3s, color 0.3s;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            padding-top: var(--navbar-height); /* Offset for fixed navbar */
         }
 
+        /* --- LOCKED NAVBAR --- */
         .navbar {
             background-color: var(--navbar-bg) !important;
             backdrop-filter: blur(10px);
             border-bottom: 1px solid var(--border-color);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: var(--navbar-height);
+            z-index: 1030;
         }
 
-        .text-secondary {
-            color: var(--text-muted) !important;
+        /* --- LOCKED SIDEBAR --- */
+        .sidebar {
+            background-color: var(--sidebar-bg);
+            border-right: 1px solid var(--border-color);
+            position: fixed;
+            top: var(--navbar-height);
+            left: 0;
+            bottom: 0;
+            width: var(--sidebar-width);
+            z-index: 1020;
+            overflow-y: auto; /* Allow scrolling if menu items overflow */
         }
 
-        .text-white-custom {
-            color: var(--text-main) !important;
+        /* --- MAIN SCROLLABLE CONTENT --- */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            min-height: calc(100vh - var(--navbar-height));
+            padding: 2rem;
         }
 
-        .search-wrapper {
-            position: relative;
-            width: 400px;
+        /* Responsive Fix for Mobile */
+        @media (max-width: 768px) {
+            .sidebar { transform: translateX(-100%); }
+            .main-content { margin-left: 0; padding: 1rem; }
         }
 
+        .text-secondary { color: var(--text-muted) !important; }
+        .text-white-custom { color: var(--text-main) !important; }
+
+        .search-wrapper { position: relative; width: 400px; }
         .search-wrapper input {
             background: var(--input-bg) !important;
             border: 1px solid var(--accent-blue);
@@ -67,18 +99,11 @@
             color: var(--text-main) !important;
             padding-left: 45px;
         }
-
         .search-wrapper .fa-search {
             position: absolute;
             left: 18px;
             top: 12px;
             color: var(--accent-blue);
-        }
-
-        .sidebar {
-            background-color: var(--sidebar-bg);
-            min-height: 100vh;
-            border-right: 1px solid var(--border-color);
         }
 
         .nav-link {
@@ -118,22 +143,20 @@
             color: white;
         }
 
-        .theme-toggle {
-            cursor: pointer;
-            font-size: 1.2rem;
-            color: var(--accent-blue);
-        }
-
-        canvas {
-            max-height: 300px;
-            width: 100% !important;
-        }
+        .theme-toggle { cursor: pointer; font-size: 1.2rem; color: var(--accent-blue); }
+        canvas { max-height: 300px; width: 100% !important; }
+        
+        /* Custom Scrollbar for Sidebar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
     </style>
 </head>
 
 <body data-bs-theme="dark">
 
-    <nav class="navbar navbar-expand-lg sticky-top">
+    <nav class="navbar navbar-expand-lg">
         <div class="container-fluid px-4">
             <a class="navbar-brand fw-bold d-flex align-items-center" href="/admin" style="color: var(--text-main)">
                 <div class="bg-info rounded-3 p-2 me-2 d-flex align-items-center justify-content-center"
@@ -161,15 +184,13 @@
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" data-bs-toggle="dropdown"
                             style="color: var(--text-main)">
-                            <img src="https://ui-avatars.com/api/?name=Admin&background=38bdf8&color=fff"
-                                class="rounded-circle me-2" width="32">
-                            <span>Admin</span>
+                            <img th:src="@{'https://ui-avatars.com/api/?name=' + ${adminName ?: 'Admin'} + '&background=38bdf8&color=fff'}"
+                                class="rounded-circle me-2" width="32" alt="Avatar">
+                            <span th:text="${adminName ?: 'Admin'}">Admin</span>
                         </a>
-                        <ul class="dropdown-menu dropdown-menu-end shadow border-0">
-                            <li><a class="dropdown-item" href="/admin/profile">Profile</a></li>
-                            <li>
-                                <hr class="dropdown-divider">
-                            </li>
+                        <ul class="dropdown-menu dropdown-menu-end shadow border-0" style="background-color: var(--card-bg);">
+                            <li><a class="dropdown-item text-white-custom" href="/admin/profile">Profile</a></li>
+                            <li><hr class="dropdown-divider border-secondary"></li>
                             <li><a class="dropdown-item text-danger" href="/admin/doctorLogin">Logout</a></li>
                         </ul>
                     </li>
@@ -178,100 +199,90 @@
         </div>
     </nav>
 
-    <div class="container-fluid">
-        <div class="row">
-            <nav class="col-md-2 d-none d-md-block sidebar px-0">
-                <div class="position-sticky pt-4">
-                    <ul class="nav flex-column">
-                        <li class="nav-item"><a class="nav-link active" href="/admin"><i
-                                    class="fas fa-chart-pie me-2"></i> Dashboard</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/admin/patients"><i
-                                    class="fas fa-user-injured me-2"></i> Patients</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/admin/doctors"><i
-                                    class="fas fa-user-md me-2"></i> Doctors</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/admin/clinics"><i
-                                    class="fas fa-hospital-alt me-2"></i> Clinics</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/admin/medicines"><i
-                                    class="fas fa-pills me-2"></i> Medicines</a></li>
-                    </ul>
-                </div>
-            </nav>
+    <div>
+        <nav class="d-none d-md-block sidebar">
+            <div class="pt-4">
+                <ul class="nav flex-column">
+                    <li class="nav-item"><a class="nav-link active" href="/admin"><i class="fas fa-chart-pie me-2"></i> Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/admin/patients"><i class="fas fa-user-injured me-2"></i> Patients</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/admin/doctors"><i class="fas fa-user-md me-2"></i> Doctors</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/admin/clinics"><i class="fas fa-hospital-alt me-2"></i> Clinics</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/admin/medicines"><i class="fas fa-pills me-2"></i> Medicines</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/admin/tests"><i class="fas fa-flask me-2"></i> Tests</a></li>
+                </ul>
+            </div>
+        </nav>
 
-            <main class="col-md-10 ms-sm-auto px-md-4 py-4">
-                <div class="d-flex justify-content-between align-items-end mb-4">
-                    <div>
-                        <h2 class="fw-bold mb-0 text-white-custom">Admin Dashboard Overview</h2>
-                        <p class="text-secondary mb-0">Management Analytics & System Stats</p>
-                    </div>
-                    <div class="text-end">
-                        <div class="p-2 px-3 rounded-3 stat-card">
-                            <i class="far fa-calendar-alt text-info me-2"></i>
-                            <span th:text="${#dates.format(#dates.createNow(), 'MMMM dd, yyyy')}"></span>
-                        </div>
+        <main class="main-content">
+            <div class="d-flex justify-content-between align-items-end mb-4">
+                <div>
+                    <h2 class="fw-bold mb-0 text-white-custom">Welcome back, <span th:text="${adminName ?: 'Admin'}">Admin</span>!</h2>
+                    <p class="text-secondary mb-0">Management Analytics & System Stats</p>
+                </div>
+                <div class="text-end">
+                    <div class="p-2 px-3 rounded-3 stat-card">
+                        <i class="far fa-calendar-alt text-info me-2"></i>
+                        <span th:text="${#dates.format(#dates.createNow(), 'MMMM dd, yyyy')}"></span>
                     </div>
                 </div>
+            </div>
 
-                <div class="row mb-4">
-                    <div class="col-md-3 mb-3 searchable-item" data-name="patients">
-                        <div class="card stat-card p-3">
-                            <h6 class="text-secondary small fw-bold">PATIENTS</h6>
-                            <h2 class="fw-bold mb-0 text-white-custom" id="totalPatients">0</h2>
-                        </div>
-                    </div>
-                    <div class="col-md-3 mb-3 searchable-item" data-name="doctors">
-                        <div class="card stat-card p-3">
-                            <h6 class="text-secondary small fw-bold">DOCTORS</h6>
-                            <h2 class="fw-bold mb-0 text-success" id="totalDoctors">0</h2>
-                        </div>
-                    </div>
-                    <div class="col-md-3 mb-3 searchable-item" data-name="medicines inventory">
-                        <div class="card stat-card p-3">
-                            <h6 class="text-secondary small fw-bold">MEDICINES</h6>
-                            <h2 class="fw-bold mb-0 text-info" id="totalMedicines">0</h2>
-                        </div>
-                    </div>
-                    <div class="col-md-3 mb-3 searchable-item" data-name="clinics">
-                        <div class="card stat-card p-3">
-                            <h6 class="text-secondary small fw-bold">CLINICS</h6>
-                            <h2 class="fw-bold mb-0 text-warning" id="totalClinics">0</h2>
-                        </div>
+            <div class="row mb-4">
+                <div class="col-md-3 mb-3 searchable-item" data-name="patients">
+                    <div class="card stat-card p-3">
+                        <h6 class="text-secondary small fw-bold">PATIENTS</h6>
+                        <h2 class="fw-bold mb-0 text-white-custom" id="totalPatients">0</h2>
                     </div>
                 </div>
+                <div class="col-md-3 mb-3 searchable-item" data-name="doctors">
+                    <div class="card stat-card p-3">
+                        <h6 class="text-secondary small fw-bold">DOCTORS</h6>
+                        <h2 class="fw-bold mb-0 text-success" id="totalDoctors">0</h2>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3 searchable-item" data-name="medicines inventory">
+                    <div class="card stat-card p-3">
+                        <h6 class="text-secondary small fw-bold">MEDICINES</h6>
+                        <h2 class="fw-bold mb-0 text-info" id="totalMedicines">0</h2>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3 searchable-item" data-name="clinics">
+                    <div class="card stat-card p-3">
+                        <h6 class="text-secondary small fw-bold">CLINICS</h6>
+                        <h2 class="fw-bold mb-0 text-warning" id="totalClinics">0</h2>
+                    </div>
+                </div>
+            </div>
 
-                <div class="row mb-4">
-                    <div class="col-md-7 mb-3">
-                        <div class="card stat-card p-4">
-                            <h5 class="fw-bold mb-3 text-white-custom">Resource Distribution (Bar)</h5>
-                            <canvas id="barChart"></canvas>
-                        </div>
-                    </div>
-                    <div class="col-md-5 mb-3">
-                        <div class="card stat-card p-4">
-                            <h5 class="fw-bold mb-3 text-white-custom">System Ratio (Pie)</h5>
-                            <canvas id="pieChart"></canvas>
-                        </div>
+            <div class="row mb-4">
+                <div class="col-md-7 mb-3">
+                    <div class="card stat-card p-4">
+                        <h5 class="fw-bold mb-3 text-white-custom">Resource Distribution (Bar)</h5>
+                        <canvas id="barChart"></canvas>
                     </div>
                 </div>
+                <div class="col-md-5 mb-3">
+                    <div class="card stat-card p-4">
+                        <h5 class="fw-bold mb-3 text-white-custom">System Ratio (Pie)</h5>
+                        <canvas id="pieChart"></canvas>
+                    </div>
+                </div>
+            </div>
 
-                <div class="card stat-card">
-                    <div class="card-header border-0 bg-transparent pt-4 px-4">
-                        <h5 class="fw-bold text-white-custom">Quick Actions</h5>
-                    </div>
-                    <div class="card-body p-4 pt-0">
-                        <div class="row g-3">
-                            <div class="col-md-3"><a href="/admin/patients?action=add"
-                                    class="btn btn-action w-100 py-3 rounded-4">Add Patient</a></div>
-                            <div class="col-md-3"><a href="/admin/doctors?action=add"
-                                    class="btn btn-action w-100 py-3 rounded-4">Add Doctor</a></div>
-                            <div class="col-md-3"><a href="/admin/medicines?action=add"
-                                    class="btn btn-action w-100 py-3 rounded-4">Add Medicine</a></div>
-                            <div class="col-md-3"><a href="/admin/clinics?action=add"
-                                    class="btn btn-action w-100 py-3 rounded-4">Add Clinic</a></div>
-                        </div>
+            <div class="card stat-card">
+                <div class="card-header border-0 bg-transparent pt-4 px-4">
+                    <h5 class="fw-bold text-white-custom">Quick Actions</h5>
+                </div>
+                <div class="card-body p-4 pt-0">
+                    <div class="row g-3">
+                        <div class="col-md-3"><a href="/admin/patients?action=add" class="btn btn-action w-100 py-3 rounded-4">Add Patient</a></div>
+                        <div class="col-md-3"><a href="/admin/doctors?action=add" class="btn btn-action w-100 py-3 rounded-4">Add Doctor</a></div>
+                        <div class="col-md-3"><a href="/admin/medicines?action=add" class="btn btn-action w-100 py-3 rounded-4">Add Medicine</a></div>
+                        <div class="col-md-3"><a href="/admin/clinics?action=add" class="btn btn-action w-100 py-3 rounded-4">Add Clinic</a></div>
                     </div>
                 </div>
-            </main>
-        </div>
+            </div>
+        </main>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -281,7 +292,6 @@
     <script>
         let barChart, pieChart;
 
-        // 1. Initialize Charts
         function initCharts(data) {
             const ctxBar = document.getElementById('barChart').getContext('2d');
             const ctxPie = document.getElementById('pieChart').getContext('2d');
@@ -314,10 +324,8 @@
             });
         }
 
-        // 2. Data Fetch
         async function loadData() {
             try {
-                // Keep values consistent with your endpoints
                 const [p, d, c, m] = await Promise.all([
                     axios.get('/api/patients'),
                     axios.get('/api/doctors'),
@@ -339,29 +347,20 @@
             }
         }
 
-        // 3. Theme & Search
-        // ==========================================
-        // DASHBOARD THEME ENGINE (Global + Charts)
-        // ==========================================
-
-        // 1. On Page Load: Check memory and apply
         $(document).ready(function () {
             const savedTheme = localStorage.getItem('hms_theme') || 'dark';
             applyTheme(savedTheme);
         });
 
-        // 2. On Button Click: Toggle and Save
         $('#themeSwitcher').on('click', () => {
             const currentTheme = $('body').attr('data-bs-theme');
             const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
             applyTheme(newTheme);
         });
 
-        // 3. The Function that does the work
         function applyTheme(theme) {
-            // A. Set Body & Icon
             $('body').attr('data-bs-theme', theme);
-            localStorage.setItem('hms_theme', theme); // Save to memory
+            localStorage.setItem('hms_theme', theme);
 
             const icon = $('#themeIcon');
             if (theme === 'light') {
@@ -370,20 +369,14 @@
                 icon.removeClass('fa-sun').addClass('fa-moon');
             }
 
-            // B. UPDATE CHARTS (This is the part from your old code)
             if (typeof barChart !== 'undefined') {
-                // If Light Mode -> Dark Text (#1e293b)
-                // If Dark Mode -> Light Text (#94a3b8)
                 const newColor = theme === 'light' ? '#1e293b' : '#94a3b8';
-
                 barChart.options.scales.x.ticks.color = newColor;
-                barChart.options.scales.y.ticks.color = newColor; // Also update Y axis
-                barChart.options.plugins.legend.labels.color = newColor; // Update legend
-
+                barChart.options.scales.y.ticks.color = newColor;
+                barChart.options.plugins.legend.labels.color = newColor;
                 barChart.update();
             }
 
-            // Update Pie Chart if it exists
             if (typeof pieChart !== 'undefined') {
                 const newColor = theme === 'light' ? '#1e293b' : '#94a3b8';
                 pieChart.options.plugins.legend.labels.color = newColor;
@@ -401,5 +394,4 @@
         $(document).ready(loadData);
     </script>
 </body>
-
 </html>

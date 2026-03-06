@@ -98,7 +98,7 @@ public class PrescriptionController {
         }
 
         if (createdFrom != null && createdTo != null) {
-            query.addCriteria(Criteria.where("audit.createdAt")
+            query.addCriteria(Criteria.where("createdDate")
                     .gte(createdFrom)
                     .lte(createdTo));
         }
@@ -149,6 +149,7 @@ public class PrescriptionController {
         String formattedId = String.format("PRS-%03d", seq);
         prescription.setPrescriptionId(formattedId);
 
+        prescription.setCreatedDate(LocalDateTime.now());
         Prescription saved = repository.save(prescription);
 
         return ResponseEntity.ok(saved);
@@ -174,6 +175,7 @@ public class PrescriptionController {
         String formattedId = String.format("PRS-%03d", seq);
         prescription.setPrescriptionId(formattedId);
 
+        prescription.setCreatedDate(LocalDateTime.now());
         Prescription saved = repository.save(prescription);
 
         return ResponseEntity.ok(saved);
@@ -184,6 +186,7 @@ public class PrescriptionController {
             @PathVariable String patientId) {
 
         Query query = new Query();
+
         query.addCriteria(
                 Criteria.where("patient.patientId").is(patientId));
 
@@ -212,6 +215,7 @@ public class PrescriptionController {
 
         String formattedId = String.format("PRS-%03d", seq);
         prescription.setPrescriptionId(formattedId);
+        prescription.setCreatedDate(LocalDateTime.now());
 
         Prescription saved = repository.save(prescription);
 
@@ -232,7 +236,21 @@ public class PrescriptionController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    
+    @GetMapping("/patients-safe/{patientId}")
+    public ResponseEntity<List<Prescription>> getPrescriptionsByPatientSafe(
+            @PathVariable String patientId) {
+
+        Query query = new Query();
+
+        query.addCriteria(
+                Criteria.where("patient").ne(null)
+                        .and("patient.patientId").is(patientId));
+
+        List<Prescription> prescriptions = mongoTemplate.find(query, Prescription.class);
+
+        return ResponseEntity.ok(prescriptions);
+    }
+
     @DeleteMapping("/{prescriptionId}")
     public ResponseEntity<Void> deletePrescription(
             @PathVariable String prescriptionId) {
